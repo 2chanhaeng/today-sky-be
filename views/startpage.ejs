@@ -17,8 +17,8 @@
       <div class="text1 fade-in-box">그날의 하늘</div>
       <div class="text2 fade-in-box">기분이 태도가 되지 않게</div>
       <div class="form fade-in-box">
-        <div class="login-button fade-in-box">LOGIN</div>
-        <div class="register-button fade-in-box">REGISTER</div>
+        <a href="/login" class="form-button fade-in-box">LOGIN</a>
+        <a href="/signup" class="form-button fade-in-box">REGISTER</a>
       </div>
       <img class="cloudimg4" src="../image/4.png" />
       <img class="cloudimg44" src="../image/4.png" />
@@ -26,5 +26,13 @@
       <img class="cloudimg6 fade-in-box" src="../image/6.png" />
       <img class="cloudimg7 fade-in-box" src="../image/6.png" />
     </div>
+    <script>
+      function signup() {
+        location.href = "/signup";
+      }
+      function login() {
+        location.href = "/login";
+      }
+    </script>
   </body>
 </html>

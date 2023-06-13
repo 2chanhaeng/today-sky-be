@@ -1,12 +1,21 @@
 import { Request, Response } from "express";
 import db from "@/models";
 import { TodoResponse } from "@/types/models";
-import { isLogin, validateDate, getDateFromUrl, today } from "@/utils";
+import {
+  isLogin,
+  validateDate,
+  getDateFromUrl,
+  today,
+  isFuture,
+  getImageNameIfHave,
+} from "@/utils";
 
 export default {
   daily,
   monthly,
   redirectMonthly,
+  timeline,
+  calendar,
   post,
   get,
   gets,
@@ -46,6 +55,16 @@ async function redirectMonthly(req: Request, res: Response) {
   res.redirect(`/todo/${year}/${month}`);
 }
 
+// 투두 타임라인
+async function timeline(req: Request, res: Response) {
+  res.render("todo/timeline");
+}
+
+// 투두 캘린더
+async function calendar(req: Request, res: Response) {
+  res.render("todo/calendar");
+}
+
 // api
 
 //투두 생성
@@ -78,15 +97,32 @@ async function get(req: Request, res: Response) {
     const user_id = await isLogin(req, res);
     if (!user_id) return res.redirect("/login");
     const [year, month, date] = getDateFromUrl(req);
-    const result = await db.todo.findAll({
-      where: {
-        year,
-        month,
-        date,
-        user_id,
-      },
-    });
-    const todos = result.map((todo) => todo.toJSON());
+    let result: any;
+    //todocalendar에서 3개만 보여주기 위해 limit 3
+    if (req.query.position === "todocalendar") {
+      result = await db.todo.findAll({
+        where: {
+          year,
+          month,
+          date,
+          user_id,
+        },
+        limit: 3,
+        order: [["id", "DESC"]],
+      });
+      //캘린더 페이지가 아닌 todo 페이지에서는 모두 보여줌
+    } else {
+      result = await db.todo.findAll({
+        where: {
+          year,
+          month,
+          date,
+          user_id,
+        },
+      });
+    }
+
+    const todos = result.map((todo: any) => todo.toJSON());
     res.status(200).json(todos);
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -208,4 +244,24 @@ async function destroyAll(req: Request, res: Response) {
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
+}
+
+async function calendarGets(req: Request, res: Response) {
+  const user_id = await isLogin(req, res);
+  if (!user_id) return res.redirect("/login");
+  const [year, month] = getDateFromUrl(req);
+  if (!validateDate(year, month, 1) || isFuture(year, month, 1)) {
+    res.redirect("/todo/calendar");
+    return;
+  }
+  const rawDiaries = await db.diary.findAll({
+    where: { user_id, year, month },
+    order: [["date", "ASC"]],
+  });
+  const diaries = rawDiaries.map((diary) => {
+    const { year, month, date } = diary.dataValues;
+    const image = getImageNameIfHave(year, month, date, user_id);
+    return { year, month, date, image };
+  });
+  res.json({ diaries });
 }

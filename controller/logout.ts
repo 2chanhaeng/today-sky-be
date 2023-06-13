@@ -11,5 +11,5 @@ async function get(req: Request, res: Response) {
   if (!id) return res.redirect("/login");
   const result = await db.user.update({ refresh: "" }, { where: { id } });
   if (!result) return res.status(500).json({ message: "로그아웃 실패" });
-  res.clearCookie("access").clearCookie("refresh").redirect("/");
+  res.clearCookie("access").clearCookie("refresh").redirect("/startpage");
 }

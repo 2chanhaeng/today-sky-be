@@ -1,9 +1,34 @@
-function updateClick() {
-  console.log("수정하세요");
+const currentPath = window.location.pathname;
+var dairyradio = document.getElementById("dairy-radio");
+var todoradio = document.getElementById("todo-radio");
+
+if (currentPath === "/todo/calendar") {
+  const todoradio = document.getElementById("todo-radio");
+  todoradio.checked = true;
 }
-function deleteClick() {
-  console.log("삭제하세요");
+
+const radioButtons = document.querySelectorAll(
+  'input[type="radio"][name="page"]'
+);
+
+// 라디오 버튼 변경 시 페이지 이동 함수
+function handleRadioChange() {
+  if (this.checked) {
+    const pageValue = this.value;
+    window.location.href = pageValue; // 페이지 변경을 위한 URL 이동
+  }
 }
+
+// 라디오 버튼에 이벤트 리스너 추가
+radioButtons.forEach((button) => {
+  button.addEventListener("change", handleRadioChange);
+  dairyradio.addEventListener("click", function () {
+    dairyradio.checked = true;
+  });
+  todoradio.addEventListener("click", function () {
+    todoradio.checked = true;
+  });
+});
 
 window.onload = function () {
   buildCalendar();
@@ -51,6 +76,9 @@ function buildCalendar() {
     newDIV.innerHTML = leftPad(nowDay.getDate()); // 추가한 열에 날짜 입력
     nowColumn.appendChild(newDIV);
 
+    let newIMG = document.createElement("img");
+    newIMG.append("");
+
     if (nowDay.getDay() == 6) {
       // 토요일인 경우
       nowRow = tbody_Calendar.insertRow(); // 새로운 행 추가
@@ -92,13 +120,14 @@ function notDate(newDiv) {
   }
   newDIV.classList.add("choiceDay"); // 선택된 날짜에 "choiceDay" class 추가
 
-  alert("지나간 날은 할 일을 지정할 수 없습니다.");
+  alert("지난 날의 ToDo는 작성 불가입니다!");
 
   //location.href = "views/not";
 }
 
 // 날짜 선택
 function choiceDate(newDIV) {
+  //console.log(newDIV);
   if (document.getElementsByClassName("choiceDay")[0]) {
     // 기존에 선택한 날짜가 있으면
     document
@@ -115,8 +144,18 @@ function choiceDate(newDIV) {
   localStorage.setItem("calDay", newDIV.innerText);
   document.getElementById("Monthshow").innerText = `${calMonth.innerText}월`;
   document.getElementById("Dayshow").innerText = `${newDIV.innerText}일`;
+  initTodo();
 }
-
+function updateClick() {
+  console.log("수정하세요");
+  const year = localStorage.getItem("calYear");
+  const month = localStorage.getItem("calMonth");
+  const day = localStorage.getItem("calDay");
+  window.location.href = `/todo/${year}/${month}/${day}`;
+}
+function deleteClick() {
+  console.log("삭제하세요");
+}
 // 이전달 버튼 클릭
 function prevCalendar() {
   nowMonth = new Date(
@@ -143,4 +182,74 @@ function leftPad(value) {
     return value;
   }
   return value;
+}
+
+// 투두리스트 화면에 출력
+
+const todoList = document.querySelector("ul.todoList");
+const apiIndivURL = (id) => `/api/todo/${id}`;
+
+async function initTodo() {
+  const year = localStorage.getItem("calYear");
+  const month = localStorage.getItem("calMonth");
+  const day = localStorage.getItem("calDay");
+  const apiDateURL = `/api/todo/${year}/${month}/${day}?position=todocalendar`;
+  console.log("hi");
+  // get, post, deleteAll
+  // 서버에서 투두리스트를 가져와서 화면에 렌더링
+  const todos = await (await fetch(apiDateURL)).json();
+  console.log(todos);
+  removeAllItems();
+  todos.forEach(({ id, checked, content }) => appendTodo(id, checked, content));
+}
+
+function removeAllItems() {
+  //todoList의 모든 자식요소를 제거
+  while (todoList.firstChild) {
+    todoList.removeChild(todoList.firstChild);
+  }
+}
+//추가
+function appendTodo(id, checked, value) {
+  const toLi = document.createElement("li");
+  toLi.id = id;
+  toLi.innerHTML = `
+  <input type="checkbox" id="${id}check" ${checked ? "checked" : ""}>
+  <label for="${id}check">${value}</label>
+  <button class="delete">x</button>
+  `;
+  // toLi
+  //   .querySelector('input[type="checkbox"]')
+  //   .addEventListener("change", toggleTodo);
+  toLi.querySelector(".delete").addEventListener("click", removeTodo);
+  console.log(toLi);
+  todoList.appendChild(toLi);
+}
+
+// 삭제
+async function removeTodo(e) {
+  // 투두 ID 추출
+  const todo = e.target.closest("li");
+  const id = Number(todo.id);
+  try {
+    // 서버에서 투두 삭제
+    const res = await deleteTodo(id);
+    if (!res.ok) throw new Error(res.status);
+    // 화면에서 투두 삭제
+    todoList.removeChild(todo);
+    console.log("투두리스트가 성공적으로 삭제되었습니다.");
+  } catch (error) {
+    console.error("투두리스트 삭제 중 오류가 발생했습니다.", error);
+  }
+}
+
+// 서버에서 투두삭제
+async function deleteTodo(id) {
+  try {
+    const res = await fetch(apiIndivURL(id), { method: "DELETE" });
+    if (!res.ok) throw new Error(res.status);
+    return res;
+  } catch {
+    console.error("투두리스트 삭제 중 오류가 발생했습니다.", error);
+  }
 }

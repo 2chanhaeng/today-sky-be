@@ -15,7 +15,7 @@
 .main-css {
   max-width: 740px;
   margin: 0% auto;
-  background: #99bcf1;
+  background: rgb(160, 187, 237);
   height: 930px;
   width: 742px;
 }
@@ -92,31 +92,22 @@
   font-family: "omyu_pretty";
   text-align: center;
 }
-.login-button {
+.form {
+  display: flex;
+  justify-content: center;
+  width: 740px;
+  height: 90px;
+}
+.form-button {
   position: relative;
   z-index: 2;
   font-family: "establishRoomNo703OTF";
   font-size: 40px;
-  margin-left: 28%;
   width: auto;
   color: antiquewhite;
+  padding: 15px;
 }
-.register-button {
-  position: relative;
-  z-index: 2;
-  width: 200px;
-  font-family: "establishRoomNo703OTF";
-  font-size: 40px;
-  color: antiquewhite;
-  float: right;
-  margin-top: -8%;
-  margin-right: 15%;
-}
-.form {
-  width: 700px;
-  height: 90px;
-  margin-top: 6%;
-}
+
 .fade-in-box {
   animation: fadein 3s;
   -moz-animation: fadein 3s; /* Firefox */

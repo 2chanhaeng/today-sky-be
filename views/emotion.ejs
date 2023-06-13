@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>감정 통계</title>
+  </head>
+  <body>
+    <div>
+      <div>aaaa</div>
+      <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+      const ctx = document.getElementById("myChart");
+      const date = new Date();
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+
+      axios({
+        method: "GET",
+        url: `/api/emotion/analyze/${year}/${month}`,
+      }).then((res) => {
+        console.log(res.data);
+        new Chart(ctx, {
+          type: "polarArea",
+          data: {
+            labels: ["Happy", "Good", "Soso", "Notbad", "Bad"],
+            datasets: [
+              {
+                label: "# of Votes",
+                data: [
+                  res.data.emotion.Happy,
+                  res.data.emotion.Good,
+                  res.data.emotion.Soso,
+                  res.data.emotion.Notbad,
+                  res.data.emotion.Bad,
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

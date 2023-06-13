@@ -2,6 +2,7 @@ import { Router } from "express";
 import controller from "@/controller";
 import diary from "./diary";
 import todo from "./todo";
+import emotion from "./emotion";
 
 const route = Router();
 
@@ -23,19 +24,14 @@ route.use("/todo", todo);
 // diary route
 route.use("/diary", diary);
 
-// todocalendar route
-route.get("/todocalendar", controller.todoCalendar);
 route.get("/todo-zh", (req, res) => res.render("todo-zh"));
 
-route.get("/timeline", function (req, res) {
-  res.render("timeline");
-});
-route.get("/dairy", function (req, res) {
-  res.render("dairy");
-});
 route.get("/startpage", function (req, res) {
   res.render("startpage");
 });
+
+//emotion route
+route.use("/emotion", emotion);
 
 // profile route
 route.get("/profile", controller.profile);

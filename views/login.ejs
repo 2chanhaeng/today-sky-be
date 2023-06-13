@@ -37,7 +37,7 @@
               </div>
               <div class="keep">
                 <div class="keep_check">
-                  <input type="checkbox" id="keep" name="keep" value="off" />
+                  <input type="checkbox" id="keep" name="keep" value="on" />
                   <div for="keep" class="keep_text">로그인 상태 유지</div>
                 </div>
               </div>
@@ -55,5 +55,8 @@
       </div>
     </main>
     <script src="/public/js/login.js" type="module"></script>
+    <script>
+      const keep = document.querySelector("#keep");
+    </script>
   </body>
 </html>

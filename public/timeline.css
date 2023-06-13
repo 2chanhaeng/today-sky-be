@@ -10,7 +10,6 @@
 
 body {
   background-color: rgb(242, 246, 247);
-  overflow: hidden;
 }
 
 div {
@@ -31,7 +30,7 @@ td {
 .Calendar {
   text-align: center;
   float: left;
-  margin-top: 5%;
+  margin-top: 1%;
   margin-left: 25%;
   font-family: "TTWanjudaedunsancheB";
   background-color: #ffffff;
@@ -146,15 +145,7 @@ a {
   margin: 4% auto;
   background-color: #a8cce7;
   /* background: #ffffff; */
-  height: 815px;
-  width: 742px;
-  overflow: hidden;
-}
-.main-css2 {
-  max-width: 740px;
-  margin: 4% auto;
-  background: #ffffff;
-  height: 1000px;
+  /* height: 1000px; */
   width: 742px;
 }
 
@@ -231,10 +222,19 @@ a {
   float: left;
   overflow: scroll;
   height: 290px;
-  width: 500px;
+  width: 550px;
   border: 2px solid;
-  margin-left: 17%;
-  margin-top: 2%;
+  margin-left: 0%;
+}
+
+.hi-margin {
+  height: 50px;
+  background-color: #a8cce7;
+}
+.hi-main {
+  background-color: #dada3b;
+  height: 320px;
+  width: 600px;
 }
 .box {
   -ms-overflow-style: none; /* IE and Edge */
@@ -308,8 +308,8 @@ fieldset {
 }
 
 .hiline {
-  border-left: 3px solid #32a1ce;
-  height: 260px;
+  border-left: 3px solid #cadbec;
+  height: 400px;
   margin-left: 22%;
   margin-top: -30%;
 }
@@ -318,8 +318,8 @@ fieldset {
   height: 100%;
 }
 .diaryimg {
-  width: 80px;
-  margin-left: -13%;
+  width: 90px;
+  margin-left: -20%;
   margin-top: 0%;
 }
 .write-button {
@@ -333,26 +333,84 @@ fieldset {
 .show-month-day {
   font-family: "TTWanjudaedunsancheB";
   margin-left: -2%;
+  margin-top: -2%;
+  width: 140px;
+  font-size: 18px;
 }
 .modify-box {
   height: 30px;
-  margin-top: -10%;
+  margin-top: -5%;
 }
 .modify1 {
   margin-left: 60%;
-  margin-top: -20%;
+  margin-top: -10%;
   width: 30px;
   height: 30px;
 }
 .modify2 {
   margin-left: 3%;
-  margin-top: -20%;
+  margin-top: -10%;
   width: 30px;
   height: 30px;
 }
 .daytext {
   size: 5px;
   background-color: #b0d331;
+}
+.dairyimg-box {
+  width: 100px;
+  height: 100px;
+  float: left;
+  margin-top: -10%;
+  margin-left: 8%;
+}
+.dairybox1 {
+  width: 110px;
+  height: 110px;
+  margin: auto;
+  float: left;
+  margin-left: -14%;
+}
+.dairybox2 {
+  width: 110px;
+  height: 110px;
+  margin: auto;
+  float: left;
+  margin-left: 1%;
+  margin-top: -11%;
+}
+.dairybox3 {
+  width: 110px;
+  height: 110px;
+  margin: auto;
+  float: left;
+  margin-left: 1%;
+  margin-top: -22%;
+}
+.diary-text {
+  font-family: "TTWanjudaedunsancheB";
+}
+fieldset {
+  width: 500px;
+}
+.total-img {
+  width: 50px;
+  height: 50px;
+  float: right;
+  margin-right: 3%;
+  margin-top: -8%;
+}
+.dropcss {
+  text-align: center;
+  height: 70px;
+}
+.dropdown-menu-css {
+  margin-left: 5%;
+}
+.timelineshow {
+  margin-left: 5%;
+  font-family: "TTWanjudaedunsancheB";
+  font-size: 25px;
 }
 
 @media (min-width: 691px) and (max-width: 900px) {
@@ -401,6 +459,43 @@ fieldset {
     height: 900px;
     /* width: 742px; */
   }
+}
+body {
+  margin-top: 100px;
+  font-family: "Trebuchet MS", serif;
+  line-height: 1.6;
+}
+.container {
+  width: 500px;
+  margin: 0 auto;
+}
+
+ul.tabs {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+ul.tabs li {
+  background: none;
+  color: #222;
+  display: inline-block;
+  padding: 10px 15px;
+  cursor: pointer;
+}
+
+ul.tabs li.current {
+  background: #ededed;
+  color: #222;
+}
+
+.tab-content {
+  display: none;
+  background: #ededed;
+  padding: 15px;
+}
+
+.tab-content.current {
+  display: inherit;
 }
 
 @media (min-width: 501px) and (max-width: 690px) {

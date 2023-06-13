@@ -1,10 +1,43 @@
-function updateClick() {
-  console.log("수정하세요");
+function timelineshow() {}
+function updateDropdownYearLink(year) {
+  var dropdownMenuLink = document.getElementById("dropdownMenuLink");
+  dropdownMenuLink.textContent = year + " 년도";
 }
-function deleteClick() {
-  console.log("삭제하세요");
+function updateDropdownMonthLink(month) {
+  var dropdownMenuLink = document.getElementById("dropdownMenuLink2");
+  dropdownMenuLink.textContent = month + " 월";
+}
+const currentPath = window.location.pathname;
+var dairyradio = document.getElementById("dairy-radio");
+var todoradio = document.getElementById("todo-radio");
+
+if (currentPath === "/todo/timeline") {
+  const todoradio = document.getElementById("todo-radio");
+  todoradio.checked = true;
 }
 
+const radioButtons = document.querySelectorAll(
+  'input[type="radio"][name="page"]'
+);
+
+// 라디오 버튼 변경 시 페이지 이동 함수
+function handleRadioChange() {
+  if (this.checked) {
+    const pageValue = this.value;
+    window.location.href = pageValue; // 페이지 변경을 위한 URL 이동
+  }
+}
+
+// 라디오 버튼에 이벤트 리스너 추가
+radioButtons.forEach((button) => {
+  button.addEventListener("change", handleRadioChange);
+  diarytimeline.addEventListener("click", function () {
+    diarytimeline.checked = true;
+  });
+  todotimeline.addEventListener("click", function () {
+    todotimeline.checked = true;
+  });
+});
 window.onload = function () {
   buildCalendar();
 }; // 웹 페이지가 로드되면 buildCalendar 실행
@@ -58,68 +91,8 @@ function buildCalendar() {
       // 토요일인 경우
       nowRow = tbody_Calendar.insertRow(); // 새로운 행 추가
     }
-
-    if (nowDay < today) {
-      // 지난날인 경우
-      newDIV.className = "pastDay";
-      newDIV.onclick = function () {
-        choiceDate(this);
-      };
-    } else if (
-      nowDay.getFullYear() == today.getFullYear() &&
-      nowDay.getMonth() == today.getMonth() &&
-      nowDay.getDate() == today.getDate()
-    ) {
-      // 오늘인 경우
-      newDIV.className = "today";
-      newDIV.onclick = function () {
-        choiceDate(this);
-      };
-    } else {
-      // 미래인 경우
-      newDIV.className = "futureDay";
-      newDIV.onclick = function () {
-        notDate(this);
-      };
-    }
   }
 }
-
-//작성불가 날짜
-function notDate(newDiv) {
-  if (document.getElementsByClassName("choiceDay")[0]) {
-    // 기존에 선택한 날짜가 있으면
-    document
-      .getElementsByClassName("choiceDay")[0]
-      .classList.remove("choiceDay"); // 해당 날짜의 "choiceDay" class 제거
-  }
-  newDIV.classList.add("choiceDay"); // 선택된 날짜에 "choiceDay" class 추가
-
-  alert("미래일기는 쓸 수 없어요!");
-
-  //location.href = "views/not";
-}
-
-// 날짜 선택
-function choiceDate(newDIV) {
-  if (document.getElementsByClassName("choiceDay")[0]) {
-    // 기존에 선택한 날짜가 있으면
-    document
-      .getElementsByClassName("choiceDay")[0]
-      .classList.remove("choiceDay"); // 해당 날짜의 "choiceDay" class 제거
-  }
-  newDIV.classList.add("choiceDay"); // 선택된 날짜에 "choiceDay" class 추가
-  //location.href = "/todo";
-  console.log(newDIV.innerText);
-  console.log(calYear.innerText);
-  console.log(calMonth.innerText);
-  localStorage.setItem("calYear", calYear.innerText);
-  localStorage.setItem("calMonth", calMonth.innerText);
-  localStorage.setItem("calDay", newDIV.innerText);
-  document.getElementById("Monthshow").innerText = `${calMonth.innerText}월`;
-  document.getElementById("Dayshow").innerText = `${newDIV.innerText}일`;
-}
-
 // 이전달 버튼 클릭
 function prevCalendar() {
   nowMonth = new Date(
@@ -137,13 +110,4 @@ function nextCalendar() {
     nowMonth.getDate()
   ); // 현재 달을 1 증가
   buildCalendar(); // 달력 다시 생성
-}
-
-// input값이 한자리 숫자인 경우 앞에 '0' 붙혀주는 함수
-function leftPad(value) {
-  if (value < 10) {
-    value = "0" + value;
-    return value;
-  }
-  return value;
 }

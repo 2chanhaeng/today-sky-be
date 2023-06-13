@@ -44,15 +44,28 @@ async function post(req: Request, res: Response) {
       expiresIn: "7d",
     });
     // DB에 refresh 토큰 저장
-    await (await user.update({ refresh })).save();
-    // JWT 토큰을 쿠키에 저장하여 클라이언트에게 전달
-    res
-      .cookie("access", access, { httpOnly: true, secure: true })
-      .cookie("refresh", refresh, { httpOnly: true, secure: true })
-      .redirect("/");
+    await user.update({ refresh });
+
+    // 쿠키 생성 및 설정
+    if (req.body.keep == "on") {
+      res
+        .cookie("access", access, {
+          httpOnly: true,
+          secure: true,
+          // 1달 유지
+          maxAge: 60 * 60 * 24 * 30,
+        })
+        .cookie("refresh", refresh, { httpOnly: true, secure: true })
+        .redirect("/");
+    } else {
+      res
+        .cookie("access", access, { httpOnly: true, secure: true })
+        .cookie("refresh", refresh, { httpOnly: true, secure: true })
+        .redirect("/");
+    }
   } catch (err) {
-    console.log("로그인 오류", err);
-    res.status(401).json({ message: "로그인 실패" });
+    console.log("콘솔 로깅", err);
+    res.status(401).json({ message: "인증 오류" });
   }
 }
 

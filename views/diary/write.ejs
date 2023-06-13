@@ -7,7 +7,7 @@
     <title>write diary</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="/public/style/diaryWrite.css" />
+    <link rel="stylesheet" href="/public/style/diary/write.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Hi+Melody&family=Lora&family=Noto+Sans+KR:wght@100;300;400;700;900&display=swap"
@@ -15,14 +15,25 @@
     />
   </head>
   <body>
-    <div id="main">
+    <main>
       <header>
         <div class="top">
-          <div></div>
-          <div class="date">6월 5일</div>
+          <a href="/">
+            <img
+              src="/public/images/home.png"
+              width="40"
+              height="40"
+              class="home"
+              alt="home"
+            />
+          </a>
+          <div class="title">
+            <%= year %>년 <%= month %>월 <%= date %>일의 일기
+          </div>
           <a href="/" class="close"></a>
         </div>
       </header>
+
       <hr />
       <form
         name="feeling_form"
@@ -30,9 +41,16 @@
         enctype="multipart/form-data"
       >
         <fieldset>
-          <div class="feelings">오늘의 기분</div>
+          <div class="feelings">
+            <img
+              src="/public/images/emotion-recognition.png"
+              width="30px"
+              height="30px"
+            />
+            오늘의 기분
+          </div>
           <br />
-          <div class="top">
+          <div class="emotion">
             <input type="radio" name="feeling" id="happy" value="1" />
             <label for="happy">
               <img
@@ -77,7 +95,10 @@
         </fieldset>
         <br />
         <fieldset>
-          <div class="feelings">오늘의 사진</div>
+          <div class="feelings">
+            <img src="/public/images/pictures.png" width="30px" height="30px" />
+            오늘의 사진
+          </div>
           <br />
           <div class="img_upload">
             <input
@@ -96,7 +117,10 @@
         </fieldset>
         <br />
         <fieldset>
-          <div class="feelings">오늘의 일기</div>
+          <div class="feelings">
+            <img src="/public/images/diary.png" width="30px" height="30px" />
+            오늘의 일기
+          </div>
           <br />
           <div class="txt">
             <textarea id="diary_write" name="diary_write" class="txt_diary">
@@ -111,7 +135,7 @@
         </div>
         <br />
       </form>
-    </div>
-    <script src="/public/js/diaryWrite.js"></script>
+    </main>
+    <script src="/public/js/diary/write.js"></script>
   </body>
 </html>

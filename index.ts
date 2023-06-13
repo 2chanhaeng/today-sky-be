@@ -8,7 +8,6 @@ import { removeLastSlash } from "@/utils/controller";
 const app = Express();
 const PORT = 8080;
 
-app.use(removeLastSlash);
 app.use(cookieParser());
 app.use(
   session({
@@ -37,6 +36,7 @@ app.use("/", route);
 app.get("*", (req, res) => {
   res.status(404).render("404");
 });
+app.use(removeLastSlash);
 
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
