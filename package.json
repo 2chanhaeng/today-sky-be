@@ -5,6 +5,7 @@
     "dev:win": "ts-node-dev -r tsconfig-paths/register -r dotenv-expand/config --files index.ts --watch",
     "db:sync": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files db-sync.ts",
     "build": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files build/index.ts",
+    "start": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files index.ts",
     "test": "jest"
   },
   "jest": {
