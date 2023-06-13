@@ -4,7 +4,7 @@
     "dev": "pm2 kill && pm2 start -r dotenv-expand/config index.sh --watch && pm2 log",
     "dev:win": "ts-node-dev -r tsconfig-paths/register -r dotenv-expand/config --files index.ts --watch",
     "db:sync": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files db-sync.ts",
-    "build": "npm i && ts-node -r tsconfig-paths/register -r dotenv-expand/config --files build/index.ts",
+    "build": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files build/index.ts",
     "start": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files index.ts",
     "test": "jest"
   },
