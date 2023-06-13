@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "pm2 kill && pm2 start index.sh --watch && pm2 log",
     "dev:win": "ts-node-dev -r tsconfig-paths/register --files index.ts --watch",
+    "db:sync": "ts-node -r tsconfig-paths/register --files db-sync.ts",
     "test": "jest"
   },
   "jest": {

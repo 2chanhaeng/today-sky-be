@@ -6,6 +6,8 @@ import timeline from "./timeline";
 import todocalendar from "./todocalendar";
 import startpage from "./startpage";
 import diary from "./diary";
+import logout from "./logout";
+import profile from "./profile";
 
 declare module "express-session" {
   interface SessionData {
@@ -20,21 +22,25 @@ async function index(req: Request, res: Response) {
 
 export default {
   index,
-  //login
+  // login
   loginPage: login.get,
   login: login.post,
   processRequest: login.processRequest,
-  //signup
+  // logout
+  logout: logout.get,
+  // signup
   signupPage: signup.get,
   signup: signup.post,
   // todo calendar
-  todoCalendar: calendar.get,
+  todoCalendar: calendar.page,
   // startpage
   StartPage: startpage.get,
-  //dairy
+  // dairy
   diary: diary.get,
-  //timeline
+  // timeline
   timeline: timeline.get,
-  //todocalendar
+  // todocalendar
   todocalendar: todocalendar.get,
+  // profile
+  profile: profile.get,
 };

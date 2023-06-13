@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <nav>
+      <a href="/">그날의 하늘</a>
+    </nav>
+    <main>
+      <h1><%= year %>년 <%= month %>월 <%= date %>일</h1>
+      <section class="emotion">
+        <img src="<%= feel %>" alt="" />
+      </section>
+      <section class="content">
+        <img src="<%= image %>" alt="" class="image" />
+        <p class="writing"><%= content %></p>
+        <% const writeURL = `./${date}/write` %>
+        <a href="<%= writeURL %>">수정하기</a>
+      </section>
+    </main>
+    <script src="/public/js/diary.js"></script>
+  </body>
+</html>

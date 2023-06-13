@@ -3,16 +3,19 @@ body {
   display: flex;
   justify-content: space-around;
 }
+
 #main {
   background-color: white;
   width: 740px;
   border-radius: 5px;
 }
+
 .top {
   align-items: center;
   display: flex;
   justify-content: space-between;
 }
+
 .close {
   position: relative;
   display: right;
@@ -21,33 +24,39 @@ body {
   text-decoration: none;
   color: black;
 }
+
 .close:after {
   content: "\00d7";
   font-size: 50pt;
   line-height: 35px;
 }
+
 .feelings {
   text-align: center;
   font-family: "Hi Melody";
   font-size: 30px;
   font-weight: 700;
 }
+
 input[type="radio"] {
   display: none;
 }
-input[type="radio"] + label {
+
+input[type="radio"]+label {
   filter: grayscale(1);
   cursor: pointer;
 }
 
-.form_feeling input[type="radio"]:checked + label {
+.form_feeling input[type="radio"]:checked+label {
   filter: grayscale(0);
   font-weight: bold;
 }
+
 .form_feeling {
   display: flex;
   flex-direction: column;
 }
+
 p {
   text-align: center;
   margin-top: 0;
@@ -55,11 +64,13 @@ p {
   font-weight: 700;
   font-size: 18px;
 }
+
 .img_upload {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 input[type="file"]::file-selector-button {
   width: 150px;
   height: 30px;
@@ -71,14 +82,17 @@ input[type="file"]::file-selector-button {
   font-family: "Hi Melody";
   font-weight: 500;
 }
+
 input[type="file"]::file-selector-button:hover {
   background-color: rgb(77, 77, 77);
   color: #fff;
 }
+
 .btn_box {
   display: flex;
   justify-content: space-around;
 }
+
 .btn {
   width: 20%;
   border-radius: 20px;
@@ -91,32 +105,37 @@ input[type="file"]::file-selector-button:hover {
   font-weight: 700;
   box-shadow: 3px 3px gray;
 }
+
 fieldset {
   border-radius: 7px;
   margin-left: 10px;
   margin-right: 10px;
 }
+
 .btn:hover {
   background-color: skyblue;
   color: white;
 }
+
 .txt {
   border-radius: 4px;
   font-size: 20px;
 }
+
 .txt_diary {
   width: 685px;
   height: 200px;
   font-size: 24px;
   font-family: "KyoboHand";
 }
+
 @font-face {
   font-family: "KyoboHand";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff")
-    format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff") format("woff");
   font-weight: normal;
   font-style: normal;
 }
+
 .uploadBtn {
   font-family: "Hi Melody";
   font-size: 25px;
@@ -129,6 +148,7 @@ fieldset {
   padding: 6px;
   box-shadow: 3px 3px gray;
 }
+
 .uploadBtn:hover {
   background-color: skyblue;
   color: white;

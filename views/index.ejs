@@ -14,23 +14,10 @@
       <h3>Welcome</h3>
       <button class="" onclick="login()">로그인</button>
       <button class="" onclick="signup()">회원가입</button>
+      <a href="/profile">프로필</a>
+      <a href="/logout">로그아웃</a>
     </div>
 
-    <script>
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth() + 1;
-      const date = today.getDate();
-      const anchor = document.createElement('a');
-      anchor.href = `/todo/${year}/${month}/${date}`;
-      anchor.textContent = '오늘의 할 일';
-      document.body.append(anchor)
-      function signup() {
-          location.href = '/signup';
-      }
-      function login() {
-          location.href = '/login';
-      }
-    </script>
+    <script src="/public/js/home.js"></script>
   </body>
 </html>

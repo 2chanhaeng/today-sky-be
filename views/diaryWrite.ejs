@@ -7,7 +7,7 @@
     <title>write diary</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="diary.css" />
+    <link rel="stylesheet" href="/public/style/diaryWrite.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Gamja+Flower&family=Hi+Melody&family=Lora&family=Noto+Sans+KR:wght@100;300;400;700;900&display=swap"
@@ -33,45 +33,45 @@
           <div class="feelings">오늘의 기분</div>
           <br />
           <div class="top">
-            <input type="radio" name="feeling" id="happy" value="happy" />
+            <input type="radio" name="feeling" id="happy" value="1" />
             <label for="happy">
               <img
-                src="/Sunday/1.png"
+                src="/feel/happy.png"
                 width="100px"
                 height="100px"
                 alt="happy"
               />
             </label>
-            <input type="radio" name="feeling" id="good" value="good" />
+            <input type="radio" name="feeling" id="good" value="2" />
             <label for="good">
               <img
-                src="/Sunday/2.png"
+                src="/feel/good.png"
                 width="100px"
                 height="100px"
                 alt="good"
               />
             </label>
-            <input type="radio" name="feeling" id="soso" value="soso" />
+            <input type="radio" name="feeling" id="soso" value="3" />
             <label for="soso">
               <img
-                src="/Sunday/3.png"
+                src="/feel/soso.png"
                 width="100px"
                 height="100px"
                 alt="soso"
               />
             </label>
-            <input type="radio" name="feeling" id="not_bad" value="not bad" />
+            <input type="radio" name="feeling" id="not_bad" value="4" />
             <label for="not_bad">
               <img
-                src="/Sunday/4.png"
+                src="/feel/not_bad.png"
                 width="100px"
                 height="100px"
                 alt="notbad"
               />
             </label>
-            <input type="radio" name="feeling" id="bad" value="bad" />
+            <input type="radio" name="feeling" id="bad" value="5" />
             <label for="bad">
-              <img src="/Sunday/5.png" width="100px" height="100px" alt="bad" />
+              <img src="/feel/bad.png" width="100px" height="100px" alt="bad" />
             </label>
           </div>
         </fieldset>
@@ -92,7 +92,7 @@
             </button>
           </div>
           <br />
-          <img id="img" src="" width="200" />
+          <img id="img" src="" width="200" name="img" />
         </fieldset>
         <br />
         <fieldset>
@@ -105,79 +105,13 @@
         </fieldset>
         <br />
         <div class="btn_box">
-          <button class="btn" type="button" onclick="send_diary()">
+          <button class="btn" type="button" onclick="sendDiary()">
             작성 완료
           </button>
         </div>
         <br />
       </form>
     </div>
-    <script>
-      async function send_diary() {
-        const form = document.forms.feeling_form;
-        const apiUrl = getApiUrl();
-        fileUpload();
-        const res = await axios({
-          method: "POST",
-          url: apiUrl,
-          data: {
-            feeling:form.feeling.value,
-            content: form.diary_write.value,
-          }
-        })
-        console.log(res);
-        window.location.href = window
-          .location
-          .pathname
-          .substring(0, window.location.pathname.lastIndexOf("/"));
-      }
-
-      //이미지 파일 업로드 코드
-      async function fileUpload() {
-        const formData = new FormData();
-        const file = document.getElementById("upload");
-        const uploadUrl = getUploadUrl();
-        console.log(uploadUrl);
-        formData.append("upload", file.files[0]);
-
-        const res = await axios({
-          method: "POST",
-          url: uploadUrl,
-          data: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-        console.log(res);
-        return url;
-      }
-
-      //이미지 파일 미리보기 코드
-      function readURL(input) {
-        if (input.files) {
-          var reader = new FileReader();
-          reader.onload = function (e) {
-            document.getElementById("img").src = e.target.result;
-          };
-          reader.readAsDataURL(input.files[0]);
-        } else {
-          document.getElementById("img").src = "";
-        }
-      }
-
-      function getApiUrl() {
-        const paths = window.location.pathname.split("/")
-        paths.pop()
-        paths.unshift("api")
-        const apiUrl = "/" + paths.join("/");
-        return apiUrl;
-      }
-
-      function getUploadUrl() {
-        const paths = window.location.pathname.split("/").slice(2, -1);
-        const apiUrl = "/" + ["api", "upload"].concat(paths).join("/");
-        return apiUrl;
-      }
-    </script>
+    <script src="/public/js/diaryWrite.js"></script>
   </body>
 </html>

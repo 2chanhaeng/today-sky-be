@@ -3,10 +3,12 @@ import session from "express-session";
 import cookieParser from "cookie-parser";
 import api from "@/api";
 import route from "@/routes";
+import { removeLastSlash } from "@/utils/controller";
 
 const app = Express();
 const PORT = 8080;
 
+app.use(removeLastSlash);
 app.use(cookieParser());
 app.use(
   session({

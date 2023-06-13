@@ -1,0 +1,51 @@
+@import url("../index.css");
+@import url("../calendar.css");
+
+body {
+  display: flex;
+  justify-content: center;
+  background-color: #a8cce7;
+  margin: 0;
+}
+
+main {
+  min-width: 300px;
+  width: 100%;
+  max-width: 550px;
+}
+
+main>header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  background-color: white;
+  border-radius: 0 0 1em 1em;
+  margin-bottom: 0.5em;
+}
+
+main>header .logo {
+  height: 5svh;
+  aspect-ratio: 2 / 1;
+}
+
+#diary-or-todo {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#diary-or-todo div.now {
+  padding: 0.5em 1em;
+  border-radius: 1em;
+  background-color: cornflowerblue;
+}
+
+article.todos {
+  background-color: white;
+  padding: 1em;
+  border-radius: 1em;
+  margin-bottom: 0.5em;
+}

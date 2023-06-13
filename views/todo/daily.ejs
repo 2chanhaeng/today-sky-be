@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/public/style/todo/daily.css" />
+  </head>
+  <body>
+    <main>
+      <h1><%= year %>년<%= month %>월<%= date %>일 의 ToDo</h1>
+      <form id="todoForm">
+        <input type="text" placeholder="새로운 할 일" name="todo" required />
+        <button id="add" type="submit"><b>추가</b></button>
+      </form>
+      <section>
+        <ul id="todoList"></ul>
+        <button id="clear">모두 삭제</button>
+      </section>
+      <div class="todo-comment">오늘 todo에 comment달기</div>
+    </main>
+    <script src="/public/js/todo/daily.js"></script>
+  </body>
+</html>

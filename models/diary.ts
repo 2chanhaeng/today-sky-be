@@ -5,29 +5,35 @@ export default function diary(
   sequelize: Sequelize,
   dataTypes: typeof DataTypes
 ) {
-  return sequelize.define<Model<Diary, Omit<Diary, "id">>, Diary>(
+  return sequelize.define<Model<Diary, Diary>, Diary>(
     "diary",
     {
-      id: {
-        type: dataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-      },
       content: {
         type: dataTypes.TEXT,
         allowNull: false,
       },
       year: {
         type: dataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
       },
       month: {
         type: dataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
       },
       date: {
         type: dataTypes.INTEGER,
+        primaryKey: true,
         allowNull: false,
+      },
+      emotion_id: {
+        type: dataTypes.INTEGER,
+        references: {
+          model: "emotion",
+          key: "id",
+        },
+        allowNull: true,
       },
       user_id: {
         type: dataTypes.INTEGER,

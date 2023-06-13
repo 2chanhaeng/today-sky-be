@@ -3,17 +3,21 @@
   flex-direction: column;
   align-items: center;
 }
+
 #login_form {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .login_warp {
   width: 100%;
   padding: 0 40px;
   box-sizing: border-box;
 }
+
 .logo {
+  margin-top: 1em;
   display: flex;
   position: relative;
   justify-content: center;
@@ -29,14 +33,20 @@ input {
   padding-left: 15px;
   border: none;
 }
+
 input:focus {
   outline: none;
 }
 
-/* 입력 폼 테두리 */
+#login_form {
+  margin-top: 1em;
+}
+
 .form_item_top {
   width: 460px;
-  border-radius: 15px 15px 0px 0px; /* 외곽선 둥글기 */
+  /* 테두리 상단 둥글게 */
+  border: 1px solid #777;
+  border-radius: 15px 15px 0px 0px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,12 +55,12 @@ input:focus {
   max-width: 100%;
   min-height: 50px;
   padding: 0 10px 0 15px;
-  border: 1px solid #777; /* 외곽선 추가 */
 }
 
 .form_item {
   width: 460px;
-  border-radius: 0px; /* 외곽선 둥글기 */
+  border: 1px solid #777;
+  border-radius: 0px;
   display: flex;
   align-items: center;
   position: relative;
@@ -58,12 +68,13 @@ input:focus {
   max-width: 100%;
   min-height: 50px;
   padding: 0 10px 0 15px;
-  border: 1px solid #777; /* 외곽선 추가 */
 }
 
 .form_item_bottom {
   width: 460px;
-  border-radius: 0px 0px 15px 15px; /* 외곽선 둥글기 */
+  /* 테두리 하단 둥글게 */
+  border: 1px solid #777;
+  border-radius: 0px 0px 15px 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -72,7 +83,38 @@ input:focus {
   max-width: 100%;
   min-height: 50px;
   padding: 0 10px 0 15px;
-  border: 1px solid #777; /* 외곽선 추가 */
+}
+
+.panel_inner {
+  width: 460px;
+}
+
+.keep_check input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #777;
+  border-radius: 50%;
+  outline: none;
+  cursor: pointer;
+  margin-top: 1em;
+}
+
+.keep_check input[type="checkbox"]:checked {
+  background-color: #73a5de;
+  border: #73a5de;
+}
+
+.keep_check .keep_text {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  color: #777;
+  position: relative;
+  bottom: 6px;
 }
 
 .btn {
@@ -80,7 +122,7 @@ input:focus {
   width: 460px;
   height: 50px;
   display: flex;
-  margin-top: 13px;
+  margin-top: 0.2em;
   padding: 0px;
   border: 1px solid rgba(0, 0, 0, 0.06);
   border-radius: 10px;
@@ -92,37 +134,6 @@ input:focus {
   justify-content: center;
 }
 
-/* 체크박스 둥글게 스타일링 */
-/* .keep {
-    width: 100%;
-} */
-.panel_inner {
-  width: 460px;
-  padding: 20px 28px;
-}
-.keep_check input[type="checkbox"] {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  width: 20px;
-  height: 20px;
-  border: 2px solid #777;
-  border-radius: 50%;
-  outline: none;
-  cursor: pointer;
-  padding: 0px;
-}
-
-.keep_check input[type="checkbox"]:checked {
-  background-color: #73a5de;
-  border: #73a5de;
-}
-.keep_check .keep_text {
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 17px;
-  color: #777;
-  position: relative;
-  bottom: 6px;
+.btn:first-child {
+  margin-top: 1em;
 }

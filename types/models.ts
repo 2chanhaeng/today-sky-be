@@ -6,12 +6,12 @@ export interface User {
 }
 
 export interface Diary {
-  id: number;
   content: string;
   user_id: number;
   year: number;
   month: number;
   date: number;
+  emotion_id?: number;
 }
 
 export interface Todo {
@@ -39,4 +39,13 @@ export interface Comment {
 export interface Image {
   path: string;
   comment_id: number;
+}
+
+export interface TodoResponse {
+  date: number;
+  id: number;
+  content: string;
+  checked?: boolean;
+  comment?: string;
+  feel?: string;
 }
