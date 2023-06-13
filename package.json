@@ -1,9 +1,10 @@
 {
   "main": "index.ts",
   "scripts": {
-    "dev": "pm2 kill && pm2 start index.sh --watch && pm2 log",
-    "dev:win": "ts-node-dev -r tsconfig-paths/register --files index.ts --watch",
-    "db:sync": "ts-node -r tsconfig-paths/register --files db-sync.ts",
+    "dev": "pm2 kill && pm2 start -r dotenv-expand/config index.sh --watch && pm2 log",
+    "dev:win": "ts-node-dev -r tsconfig-paths/register -r dotenv-expand/config --files index.ts --watch",
+    "db:sync": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files db-sync.ts",
+    "build": "ts-node -r tsconfig-paths/register -r dotenv-expand/config --files build/index.ts",
     "test": "jest"
   },
   "jest": {
@@ -22,6 +23,8 @@
     "@types/sequelize": "^4.28.15",
     "cookie": "^0.5.0",
     "cookie-parser": "^1.4.6",
+    "dotenv": "^16.1.4",
+    "dotenv-expand": "^10.0.0",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
