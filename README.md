@@ -107,13 +107,14 @@ erDiagram
     int id
     string username
     string password
+    string refresh
   }
   DIARY {
-    int id
     int year
     int month
     int date
     int user_id
+    int emotion_id
     text content
   }
   TODO {
@@ -122,6 +123,7 @@ erDiagram
     int month
     int date
     string content
+    boolean checked
   }
   COMMENT {
     int id
