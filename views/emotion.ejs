@@ -6,12 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/public/style/emotion/chart.css" />
     <title>감정 통계</title>
   </head>
   <body>
-    <div>
-      <div>aaaa</div>
-      <canvas id="myChart"></canvas>
+    <div class="emotion">
+      <div>This Month My Emotion tatistics</div>
+      <div style="width: 610px">
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
 
     <script>
@@ -49,9 +52,33 @@
                 beginAtZero: true,
               },
             },
+            plugins: {
+              customCanvasBackgroundColor: {
+                color: "#A8CCE7",
+              },
+            },
+            scales: {
+              y: {
+                // defining min and max so hiding the dataset does not change scale range
+                min: 0,
+                max: 100,
+              },
+            },
           },
+          plugins: [plugin],
         });
       });
+      const plugin = {
+        id: "customCanvasBackgroundColor",
+        beforeDraw: (chart, args, options) => {
+          const { ctx } = chart;
+          ctx.save();
+          ctx.globalCompositeOperation = "destination-over";
+          ctx.fillStyle = options.color || "#A8CCE7";
+          ctx.fillRect(0, 0, chart.width, chart.height);
+          ctx.restore();
+        },
+      };
     </script>
   </body>
 </html>
