@@ -21,7 +21,7 @@ async function initTodo() {
 async function removeTodo(e) {
   // 투두 ID 추출
   const todo = e.target.closest("li");
-  const id = Number(todo.id);
+  const id = todo.id;
   try {
     // 서버에서 투두 삭제
     const res = await deleteTodo(id);
@@ -154,23 +154,25 @@ async function appendTodo(id, checked, value) {
   let contentHTML = `
     <input type="checkbox" id="${id}check" ${checked ? "checked" : ""}>
     <label for="${id}check">${value}</label>
-    <button class="edit">Edit</button>
-    <button class="delete">x</button>
+    <button class="edit"><img src="/public/images/edit.png" width="18px" height="18px"></button>
+    <button class="delete"><img src="/public/images/close.png" width="25px" height="25px"></button>
     <button type="button" class="comment">comment<img src="/public/images/comment.png" width="25px" height="25px"/></button>
   `;
 
   const comment = await getComment(id);
   if (comment && comment.content) {
     contentHTML += `
-      <div class="comment-container">${comment.content}</div>
-      <button type="button" class="comment-edit">Edit</button>
-      <button type="button" class="comment-delete">x</button>
+    <div class="comment_hide" id="comment_hide${id}">
+      <div class="comment-container comment_read "><img src="/public/images/turn-right.png" width="20px" height="20px"/>${comment.content}</div>
+      <button type="button" class="comment-delete ">삭제</button>
+      <button type="button" class="comment-edit ">수정</button>
+      </div>
     `;
   } else {
     contentHTML += `
-      <li class="comment-container" >
+      <li class="comment-container comment_hide" >
         <textarea type="text" class="toggle" id="toggle${id}" rows="1" placeholder="댓글 작성" oninput="calcTextareaHeight(this)"></textarea>
-        <button type="button" class="comment_submit" onclick="sendComment(${id})">작성</button>
+        <button type="button" class="comment_submit" onclick="sendComment(${id})">comment 제출</button>
         <input type="hidden" class="comment-edit"></input>
         <input type="hidden" class="comment-delete"></input>
       </li>
@@ -178,7 +180,6 @@ async function appendTodo(id, checked, value) {
   }
 
   li.innerHTML = contentHTML;
-  li.style.fontFamily = "ImcreSoojin";
   li.querySelector('input[type="checkbox"]').addEventListener(
     "change",
     toggleTodo
@@ -190,6 +191,7 @@ async function appendTodo(id, checked, value) {
   //comment 이벤트
   li.querySelector(".comment-edit").addEventListener("click", editComment);
   li.querySelector(".comment-delete").addEventListener("click", removeComment);
+  );
   todoList.appendChild(li);
   document.querySelector("section").style.display = "block";
 }
@@ -268,28 +270,21 @@ async function deleteComment(todoId) {
   }
 }
 
-
+//textarea 칸 자동 늘리기
 async function calcTextareaHeight(e) {
   e.style.height = "auto";
   e.style.height = `${e.scrollHeight}px`;
 }
-
-//지금 작동이 안됌 내일 수정해야함.
+//작성된 comment토글
 async function commentToggle(e) {
   const todo = e.target.closest("li");
-  const cmt = todo.querySelector(".toggle");
-
-  if (window.getComputedStyle(cmt).display === "none") {
-    console.log(window.getComputedStyle(cmt).display);
-    cmt.style.display = "block";
-  } else {
-    cmt.style.display = "none"
-  }
+  const comment = document.querySelector(`#comment_hide${todo.id}`);
+  comment.classList.toggle("readComment_hide");
 }
 
 async function toggleTodo(e) {
   const todo = e.target.closest("li");
-  const id = Number(todo.id);
+  const id = todo.id;
   const checked = e.target.checked;
   try {
     const res = await fetch(apiIndivURL(id), {

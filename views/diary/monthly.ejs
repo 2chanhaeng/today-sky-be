@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/public/style/diary/monthly.css">
+  <title>Monthly</title>
+</head>
+<body>
+<main>
+  <header>
+    <img class="logo" src="/image/dailylogo3.png"></img>
+    <div id="diary-or-todo">
+      <div class="now">
+        <a href="<%= `/diary/${year}/${month}` %>">Diary</a>
+      </div>
+      <div>
+        <a href="<%= `/todo/${year}/${month}` %>">Todo</a>
+      </div>
+    </div>
+  </header>
+<section id="calendar"></section>
+<section id="diaries"></section>
+<footer></footer>
+</main>
+
+<script src="/public/js/diary/monthly.js" type="module"></script>
+
+</head>
+
+</html>

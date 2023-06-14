@@ -1,0 +1,261 @@
+@import url("../index.css");
+@import url("../calendar.css");
+@import url("https://fonts.googleapis.com/css?family=Questrial&display=swap");
+
+@font-face {
+  font-family: "TTWanjudaedunsancheB";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2304-2@1.0/TTWanjudaedunsancheB.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  background-color: rgb(160, 187, 237);
+  margin: 0;
+}
+
+main {
+  min-width: 300px;
+  width: 100%;
+  max-width: 700px;
+}
+
+main>header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  background-color: white;
+  border-radius: 0 0 1em 1em;
+  margin-bottom: 0.5em;
+}
+
+main>header .logo {
+  height: 5svh;
+  aspect-ratio: 2 / 1;
+}
+
+#diary-or-todo {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+#diary-or-todo div.now {
+  padding: 0.5em 1em;
+  border-radius: 1em;
+  background-color: rgb(160, 187, 237);
+}
+
+article.todos {
+  background-color: white;
+  padding: 1em;
+  border-radius: 1em;
+  margin-bottom: 0.5em;
+}
+
+main>footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  background-color: white;
+  border-radius: 1em 1em 0 0;
+  margin-top: 0.5em;
+  font-family: "TTWanjudaedunsancheB";
+  font-size: large;
+  flex: 1;
+  position: fixed;
+  bottom: 0;
+  max-width: 700px;
+  width: 700px;
+  justify-content: space-evenly;
+}
+
+.write-button {
+  width: 65px;
+}
+
+.bottom {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.todoshowbox {
+  width: 700px;
+  background-color: white;
+  border-radius: 1em 1em 1em 1em;
+  height: 256px;
+  display: flex;
+  align-items: center;
+  margin-top: 1em;
+  padding: 5%;
+}
+
+.diaryimg {
+  width: 80px;
+  margin: 2em;
+}
+
+.show-month-day {
+  font-family: "TTWanjudaedunsancheB";
+  font-size: large;
+  margin-left: 2em;
+}
+
+.box {
+  width: 150px;
+  border-radius: 1em 1em 1em 1em;
+}
+
+.todolist {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: "TTWanjudaedunsancheB";
+  font-size: large;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Questrial&display=swap");
+
+td {
+  width: 50px;
+  height: 50px;
+}
+
+.Calendar {
+  text-align: center;
+  justify-content: space-between;
+  width: 700px;
+
+  background-color: white;
+  border-radius: 1em 1em 1em 1em;
+}
+
+.Calendar>thead>tr:first-child>td {
+  font-family: "Questrial", sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.Calendar>thead>tr:last-child>td {
+  font-family: "Questrial", sans-serif;
+  font-weight: 600;
+}
+
+.Calendar>tbody>tr>td>p {
+  font-family: "Montserrat", sans-serif;
+  height: 60px;
+  width: 60px;
+  border-radius: 45px;
+  transition-duration: 0.2s;
+  line-height: 45px;
+  margin: 2.5px;
+  display: block;
+  text-align: center;
+}
+
+.pastDay {
+  color: lightgray;
+}
+
+.today {
+  background-color: #f5d042;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.futureDay {
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.futureDay:hover {
+  background: #eee;
+}
+
+.futureDay.choiceDay,
+.today.choiceDay {
+  background: #0a174e;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+[type="radio"] {
+  vertical-align: middle;
+  appearance: none;
+  border: max(2px, 0.1em) solid gray;
+  border-radius: 50%;
+  width: 1.25em;
+  height: 1.25em;
+  transition: border 0.5s ease-in-out;
+}
+
+[type="radio"]:checked {
+  border: 0.4em solid rgb(76, 134, 235);
+}
+
+[type="radio"]:focus-visible {
+  outline-offset: max(2px, 0.1em);
+  outline: max(2px, 0.1em) dotted rgb(102, 128, 232);
+}
+
+[type="radio"]:hover {
+  box-shadow: 0 0 0 max(4px, 0.2em) lightgray;
+  cursor: pointer;
+}
+
+[type="radio"]:disabled {
+  background-color: lightgray;
+  box-shadow: none;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+[type="radio"]:disabled+span {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Global CSS */
+fieldset {
+  display: flex;
+  justify-content: center;
+  width: 550px;
+  /* margin: 0;
+  padding: 40px 20px; */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.modify-box {
+  justify-content: center;
+  margin-top: -8em;
+  margin-left: 40%;
+}
+
+.modify1 {
+  width: 35px;
+}
+
+.modify2 {
+  width: 35px;
+}
+
+.box2 {
+  font-family: "TTWanjudaedunsancheB";
+  margin-left: -50%;
+}

@@ -7,9 +7,9 @@ import {
   today,
   getDateFromUrl,
   getFromDB,
-  getAllFromDB,
   getImageNameIfHave,
 } from "@/utils";
+import { DiaryResponse } from "@/types/models";
 
 export default {
   get,
@@ -37,10 +37,10 @@ async function monthly(req: Request, res: Response) {
   if (!user_id) return res.redirect("/login");
   const [year, month] = getDateFromUrl(req);
   if (!validateDate(year, month, 1) || isFuture(year, month, 1)) {
-    res.redirect("/diary/");
+    res.redirect("/diary");
     return;
   }
-  res.render("monthly", { year, month });
+  res.render("diary/monthly", { year, month });
 }
 
 async function daily(req: Request, res: Response) {
@@ -96,9 +96,24 @@ async function gets(req: Request, res: Response) {
   if (!validateDate(year, month, 1) || isFuture(year, month, 1)) {
     return res.status(400).json({ error: "Invalid date" }).end();
   }
-  const diaries = await getAllFromDB(db.diary, {
+  const diariesResult = await db.diary.findAll({
     where: { user_id, year, month },
   });
+  if (!diariesResult) {
+    return res.status(404).json({ error: "이번 달 일기가 없습니다." }).end();
+  }
+  const diaries = diariesResult
+    .filter((diary) => diary)
+    .map((diary) => diary.dataValues)
+    .map(({ date, content, emotion_id }) => {
+      const image = getImageNameIfHave(year, month, date, user_id) || "";
+      const feel = emotion_id ? `/public/images/feel/${emotion_id}.png` : "";
+      return { date, content, image, feel };
+    })
+    .reduce((acc, cur) => {
+      acc[cur.date] = cur;
+      return acc;
+    }, {} as { [key: number]: DiaryResponse });
   res.json(diaries);
 }
 

@@ -1,5 +1,5 @@
 import request from "supertest";
-import { today, getFromDB, getAllFromDB, createFromDB } from "@/utils";
+import { today, getFromDB } from "@/utils";
 import { signup, getLoginSession, genIdPw, genPort } from "@/utils/testutil";
 import db from "@/models";
 import { Todo } from "@/types/models";

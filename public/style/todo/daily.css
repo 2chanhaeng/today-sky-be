@@ -1,12 +1,12 @@
 body {
-  background-color: rgb(160, 187, 237);
+  background-color: #c9dcff;
   display: flex;
   justify-content: space-around;
 }
-.main {
+main {
   margin: auto;
   max-width: 740px;
-  background: #ffffff;
+  background-color: #edf5ff;
   width: 742px;
   height: 900px;
   border-radius: 5px;
@@ -19,7 +19,7 @@ body {
   display: flex;
   justify-content: space-between;
 }
-.list {
+.title {
   font-family: "ImcreSoojin";
   font-size: 23px;
 }
@@ -46,6 +46,7 @@ body {
   margin-right: 30px;
   padding: 5px;
   font-family: "ImcreSoojin";
+  border-radius: 5px;
 }
 #txt:focus {
   border-bottom: 3px solid black;
@@ -54,36 +55,35 @@ section {
   background-color: white;
   margin-top: 10px;
   padding: 10px 40px 10px 0px;
+  border-radius: 3px;
 }
 
 ul {
   list-style: none;
+  margin-top: -10px;
+}
+li {
+  font-family: "ImcreSoojin";
+  font-size: 21px;
+  margin-top: 37px;
 }
 #todoForm {
-  padding-left: 60px;
-}
-.td {
-  padding-bottom: 10px;
-  padding-top: 10px;
-  font-size: 1.3em;
-  font-family: "ImcreSoojin";
-  padding-left: 30px;
+  padding-left: 70px;
 }
 
 .delete {
   cursor: pointer;
-  border-radius: 20px;
-  background-color: black;
-  color: white;
-  font-size: 11px;
-  padding: 0px 4px 1px 4px;
+  border: none;
+  background-color: white;
+  margin-left: -7px;
 }
 .btnclear {
   padding-left: 45px;
+  margin-top: 40px;
 }
 #clear {
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   background-color: white;
   border-radius: 10px;
@@ -94,35 +94,21 @@ ul {
   color: white;
   box-shadow: 2px 2px gray;
 }
-.btnsub {
-  width: 48px;
-  height: 48px;
-  font-size: 15px;
+#add {
+  width: 60px;
+  height: 60px;
+  font-size: 22px;
   background-color: #b4b4ff;
-  border-radius: 24px;
+  border-radius: 31px;
   outline: 0;
   border: none;
   cursor: pointer;
   font-family: "ImcreSoojin";
+  box-shadow: 3px 3px 3px black;
 }
-.btnsub:hover {
+#add:active {
   border: 4px solid #4b4bf4;
-  box-shadow: 2px 2px black;
-}
-.btncom {
-  width: 48px;
-  height: 48px;
-  font-size: 15px;
-  background-color: #7e7eff;
-  border-radius: 24px;
-  outline: 0;
-  border: none;
-  cursor: pointer;
-  font-family: "ImcreSoojin";
-}
-.btncom:hover {
-  border: 4px solid #4848fc;
-  box-shadow: 2px 2px black;
+  box-shadow: 0px 0px black;
 }
 .todo-comment {
   float: left;
@@ -135,22 +121,91 @@ ul {
   font-family: "ImcreSoojin";
   border: none;
 }
+.comment-edit {
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 13px;
+  float: right;
+  margin-right: 6px;
+  font-family: "IBMPlexSansKR-Regular";
+  font-weight: 700;
+  background-color: rgb(255, 230, 160);
+  box-shadow: 2px 2px black;
+}
+.comment_read {
+  border-bottom: 2px solid;
+}
+.comment-edit:active {
+  box-shadow: 0px 0px black;
+}
+.comment-delete {
+  cursor: pointer;
+  border-radius: 10px;
+  font-size: 13px;
+  float: right;
+  font-family: "IBMPlexSansKR-Regular";
+  font-weight: 700;
+  background-color: rgb(255, 178, 178);
+  box-shadow: 2px 2px black;
+}
+.comment-delete:active {
+  box-shadow: 0px 0px black;
+}
+.comment-container {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 22px;
+  font-family: "KyoboHand";
+  margin-left: 26px;
+}
 .toggle {
   border: none;
   font-family: "KyoboHand";
   width: 100%;
-  height: 20px;
-  margin-top: 13px;
+  margin-top: 6px;
   outline: 0;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 400;
-  margin-left: 20px;
 }
 .toggle:focus {
   border-bottom: 2px solid black;
 }
-li {
-  margin-top: 15px;
+.comment_submit {
+  width: 100%;
+  border-radius: 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  font-family: "ImcreSoojin";
+  height: 29px;
+  font-size: 18px;
+  letter-spacing: 3px;
+  margin-left: 18px;
+  background-color: #c4ccf8;
+  text-align: center;
+  border: none;
+  box-shadow: 3px 3px 3px black;
+}
+.comment_submit:hover {
+  border: 4px solid #4146eb;
+  box-shadow: 0px 0px black;
+}
+.readComment_hide {
+  display: none;
+}
+.edit {
+  border: none;
+  cursor: pointer;
+  background-color: white;
+}
+.edit:hover {
+  border: 2px solid rgb(255, 218, 178);
+  border-radius: 10px;
+  filter: drop-shadow(2px 2px black);
+}
+.comment:hover {
+  box-shadow: 2px 2px rgb(47, 47, 47);
+  color: rgb(39, 183, 255);
+  border-radius: 10px;
 }
 @font-face {
   font-family: "ImcreSoojin";
@@ -162,6 +217,13 @@ li {
 @font-face {
   font-family: "KyoboHand";
   src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: "IBMPlexSansKR-Regular";
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/IBMPlexSansKR-Regular.woff")
     format("woff");
   font-weight: normal;
   font-style: normal;

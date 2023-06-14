@@ -1,4 +1,15 @@
+:root {
+  --bg-color: rgb(160, 187, 237);
+}
+
 :any-link {
   text-decoration: none;
   color: inherit;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  background-color: var(--bg-color);
+  margin: 0;
 }

@@ -1,11 +1,11 @@
 body {
-  background-color: rgb(161, 181, 215);
+  background-color: #c9dcff;
   display: flex;
   justify-content: space-around;
 }
 
 main {
-  background-color: #c9dcff;
+  background-color: #edf5ff;
   width: 740px;
   height: 100%;
   border-radius: 15px;
@@ -62,6 +62,7 @@ main {
 .title {
   font-family: "ImcreSoojin";
   font-size: 27px;
+  margin-left: 170px;
 }
 
 .feelings {
@@ -70,6 +71,7 @@ main {
   font-size: 30px;
   font-weight: 700;
   text-shadow: 1px 1px gray;
+  margin-top: 10px;
 }
 
 .home {
@@ -80,12 +82,12 @@ input[type="radio"] {
   display: none;
 }
 
-input[type="radio"]+label {
+input[type="radio"] + label {
   filter: grayscale(1);
   cursor: pointer;
 }
 
-.form_feeling input[type="radio"]:checked+label {
+.form_feeling input[type="radio"]:checked + label {
   filter: grayscale(0);
   font-weight: bold;
   filter: drop-shadow(3px 3px 3px black);
@@ -152,6 +154,7 @@ fieldset {
   border-color: #000;
   margin-left: 10px;
   margin-right: 10px;
+  background-color: white;
 }
 
 .btn:hover {
@@ -174,7 +177,8 @@ fieldset {
 
 @font-face {
   font-family: "KyoboHand";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@1.0/KyoboHand.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }
@@ -201,7 +205,8 @@ fieldset {
 
 @font-face {
   font-family: "ImcreSoojin";
-  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.3/ImcreSoojin.woff") format("woff");
+  src: url("https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.3/ImcreSoojin.woff")
+    format("woff");
   font-weight: normal;
   font-style: normal;
 }

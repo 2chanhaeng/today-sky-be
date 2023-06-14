@@ -49,3 +49,10 @@ export interface TodoResponse {
   comment?: string;
   feel?: string;
 }
+
+export interface DiaryResponse {
+  date: number;
+  content: string;
+  feel?: string;
+  image?: string;
+}
