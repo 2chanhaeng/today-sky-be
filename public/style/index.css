@@ -13,3 +13,7 @@ body {
   background-color: var(--bg-color);
   margin: 0;
 }
+
+.hidden {
+  display: none;
+}

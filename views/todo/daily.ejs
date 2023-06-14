@@ -11,41 +11,35 @@
     <main>
       <header class="top">
         <a href="/">
-          <img
-            src="/public/images/home.png"
-            width="40"
-            height="40"
-            class="home"
-            alt="home"
-          />
+          <img src="/public/images/home.png" class="home" alt="home" />
         </a>
         <div class="title"><%= year %>년 <%= month %>월 <%= date %>일 ToDo</div>
         <a href="/todo/<%= year %>/<%= month %>" class="close"></a>
       </header>
       <hr />
-      <br />
-      <form id="todoForm" name="todoForm">
-        <img
-          src="/public/images/questionnaire.png"
-          width="30px"
-          height="30px"
-          alt=""
-        />
-        <input
-          type="text"
-          id="txt"
-          placeholder="새로운 할 일"
-          name="todo"
-          required
-        />
-        <button type="submit" id="add">추가</button>
-      </form>
-      <section>
-        <ul id="todoList"></ul>
-        <div class="btnclear">
-          <button type="button" id="clear">모두 삭제</button>
-        </div>
-      </section>
+      <div class="daily-container">
+        <fieldset>
+          <form id="todoForm" name="todoForm">
+            <img src="/public/images/questionnaire.png" class="todo-img" />
+            <input
+              type="text"
+              id="txt"
+              placeholder="새로운 할 일"
+              name="todo"
+              required
+            />
+            <button type="submit" id="add">추가</button>
+          </form>
+        </fieldset>
+        <fieldset>
+          <section>
+            <ul id="todoList"></ul>
+            <div class="btnclear">
+              <button type="button" id="clear">모두 삭제</button>
+            </div>
+          </section>
+        </fieldset>
+      </div>
     </main>
     <script src="/public/js/todo/daily.js"></script>
   </body>

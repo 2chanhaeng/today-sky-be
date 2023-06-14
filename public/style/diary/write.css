@@ -1,16 +1,15 @@
 body {
-  background-color: #c9dcff;
+  background-color: rgb(161, 181, 215);
   display: flex;
   justify-content: space-around;
 }
 
 main {
-  background-color: #edf5ff;
+  background-color: #c9dcff;
   width: 740px;
   height: 100%;
   border-radius: 15px;
 }
-
 .date {
   font-family: "Hi Melody";
   font-size: 40px;
@@ -96,6 +95,7 @@ input[type="radio"] + label {
 .form_feeling {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
 }
 
 p {

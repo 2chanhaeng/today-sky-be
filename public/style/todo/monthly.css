@@ -6,3 +6,8 @@ article.todos {
   border-radius: 1em;
   margin-bottom: 0.5em;
 }
+
+.show-image {
+  width: 35px;
+  height: 35px;
+}

@@ -88,7 +88,8 @@ function Todo({ id, checked, content, comment, feel }) {
     if (feel) {
       const emotionImg = document.createElement("img");
       emotionImg.classList.add("emotion");
-      emotionImg.src = `/feel/${feel}`;
+      emotionImg.src = `${feel}`;
+      emotionImg.className = "show-image";
       Comment.appendChild(emotionImg);
     }
   }
