@@ -41,7 +41,7 @@ div.calendar.weekdays {
 
 .calendar.dates>div.today {
   box-sizing: border-box;
-  background-color: rgb(255, 128, 128);
+  border-radius: 50%;
   border: 0.5em solid rgb(255, 128, 128);
 }
 
