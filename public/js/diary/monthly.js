@@ -29,7 +29,7 @@ async function renderDiaries(root) {
     // 해당 링크를 가지고 있는 앵커의 부모 div 찾기
     .map((link) => document.querySelector(`a[href="${link}"]`).parentElement)
     // 클래스 추가해서 표시하기
-    .forEach((date) => date.classList.add("diary-written"));
+    .forEach((date) => date.classList.add("written"));
 }
 /**
  * @typedef {Object} Diary
