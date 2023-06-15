@@ -1,6 +1,5 @@
 ---
 marp: true
-style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 ---
 
 # 그날의 하늘
@@ -13,7 +12,7 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 
 # 접속
 
-![QR코드](/public/images/qr코드.png)
+![QR코드](https://github.com/2chanhaeng/codingon-kdt-web7-project2-team2/blob/main/public/images/qr.png?raw=true)
 
 # https://today-sky.chomu.dev/startpage
 
@@ -49,6 +48,8 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 - 코드 관리
   - Git
   - GitHub
+- 보안
+  - JWT
 - 기타
   - Slack
   - Notion
@@ -60,6 +61,8 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 - Typesctipt
   - 에러와 타입을 미리 확인할 수 있어서 오류를 줄일 수 있음.
   - 강력한 타입 체크로 코드의 가독성을 높일 수 있음.
+- JWT
+  - Refresh 토큰을 사용하여 보안성을 높임.
 - CloudType
   - 빠르고 쉽게 API 구축이 가능
   - **무료**
@@ -68,13 +71,13 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 
 # DB 설계
 
-![DB 설계](/public/images/db%EC%84%A4%EA%B3%84.png)
+![DB 설계](https://github.com/2chanhaeng/codingon-kdt-web7-project2-team2/blob/main/public/images/db.png?raw=true)
 
 ---
 
 # API 명세
 
-![API 명세](/public/images/API%20%EB%AA%85%EC%84%B8.jpg)
+![API 명세](https://github.com/2chanhaeng/codingon-kdt-web7-project2-team2/blob/main/public/images/api.jpg?raw=true)
 
 ---
 
@@ -95,6 +98,7 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 
 | Path                       | Description                             |
 | -------------------------- | --------------------------------------- |
+| /todo/                     | /todo/`year`/`month` 리다이렉트         |
 | /todo/`year`/`month`       | `year`년 `month`월 TODO 페이지          |
 | /todo/`year`/`month`/`day` | `year`년 `month`월 `day`dlf TODO 페이지 |
 
@@ -102,37 +106,64 @@ style: @import url('https://unpkg.com/tailwindcss@^2/dist/utilities.min.css');
 
 # 소감
 
-- 이찬행
-  - git 관리 잘 하고 커밋, PR 메세지를 자세히 남깁시다. PM 너무 힘들어집니다. 🥲
-  - 코드는 제발 복붙하지 말고 git을 써서 공유합시다. 컨플릭트가 한 번에 열 몇 개씩 나요. 😱
-  - Next.js 도 써보고 싶었는데 이미 팀원들이 어려워하는 부분이 많아서 하지 못했습니다.
-  - 타입 확인을 잘 하고 `any`는 절대 쓰지 말아주세요. (5시간 날림)
-  - 팀원 간의 포매터 설정 동기화는 되도록 빨리 합시다. 4자릿수 커밋 기록이 남아요. 😇
-  - 팀 프로젝트는 남들한테 맞춰가면서 뭘 해야할지 보다는 뭘 하고 싶은지를 생각하고 실천하는 것이 좋다고 생각합니다.
+## 권대용
+
+이 팀 프로젝트에서는 초기에 로그인 및 회원가입 페이지를 맡아 구현했다. 로그인 할떄는 인증을 위해 JWT를 사용하여 처리했는데, 이 부분은 정말 어려웠다. 또한, MySQL 데이터베이스에 연결하고 sequelize 라이브러리를 사용하여 파일을 목적에 따라 분리했다.
+
+그 후에는 TODO 및 COMMENT의 CRUD와 관련된 API를 작성했는데 API작성은 처음이라 감을 못잡고있을때 조장님이 많이 도와주셨다 . 다음으로 TODO 작성 페이지에서 api를 활용해서 TODO를 생성, 수정,삭제하는 기능을 연결했고, 각 TODO에 COMMENT를 달아서 TODO에 대한 기분을 남기는 작업도 했습니다. 마지막에는 daily페이지의 css를 하영님과 같이 수정했다.
 
 ---
 
 # 소감
 
-- 권대용
+## 권대용
+
+프로젝트를 마무리하면서 우선 기존에 프론트 프로젝트만 경험했던 나로서는 첫 API작업이었고, 그 API를 가져와서 프론트 페이지의 데이터와 연결하는것도 엄청 힘들었다. 며칠 간 강사님께 질문도 엄청하고 찬행님도 도움을 주시고 주석을 달아주셔서 개선할 부분과 어디가 부족한지 바로바로 알 수 있어서 혼자 작업할때 막혀서 진도가 안나가서 막막한 상황이 안나와서 좋았다.
+
+프로젝트를 시작할때 서로 여러 의견을 제시했는데 그중에서 백엔드 팀플이다보니 가장 효율이 좋을 것 같은 소재를 선택했고, 가장 큰 도전과제가 여태 한번도 사용 안해본 타입스크립트를 사용하자고 의견이 나온 것이다. 그래도 막상 사용해보니 좋은점도 있었고! 조장님이 집에서 기본 세팅 등을 미리 준비해주셔서 시작이 좋았고, 개인적으로 공부가 엄청 된거같다.
 
 ---
 
 # 소감
 
-- 엄준석
+## 엄준석
+
+한 일이 기능 하나 하느라 기간을 다 써버려서 조원들한테 짐이 된 거 같아 미안했습니다. 다른 조원들도 할 일이 있는데 질문을 잘 답변해주신 것에 감사했습니다.
 
 ---
 
 # 소감
 
-- 임지현
+## 임지현
+
+1. GitHub
+   - 코드 올리기: 어떤 코드를 작성했는지 이해하기 쉽게 코드를 올리는 방법을 배울 수 있었다
+   - 충돌 해결: 내 브랜치에서 충돌이 발생하였을 때 어떤 방식으로 충돌을 해결하는지
+2. 모듈 분리하기
+   mvc 패턴으로 모듈을 분리하고, 내보내고 받는 과정이 이해가 안가 조금 헤멨지만, 팀원들의 코드를 계속해서 읽어보고 질문하며 어떤 방식으로 분리하는지 배울 수 있었다.
 
 ---
 
 # 소감
 
-- 최하영
+## 최하영
+
+백엔드와 프론트엔드가 서로 합쳐져서 하나의 페이지가 완성된 것을 보고 멋지다 생각을 했고 하나의 웹을 만드는게 어려운것이라고 느꼈다. 이번 프로젝트에서 깃에 대해 더 자세하게 배웠고 좋은 경험이었다고 생각한다.
+
+---
+
+# 소감
+
+## 이찬행
+
+- git 관리 잘 하고 커밋, PR 메세지를 자세히 남깁시다. PM 너무 힘들어집니다. 🥲
+- 코드는 제발 복붙하지 말고 git을 써서 공유합시다. 컨플릭트가 한 번에 열 몇 개씩 나요. 😱
+- 타입 확인을 잘 하고 `any`는 절대 쓰지 말아주세요. (5시간 날림) 😩
+- Git Repositody 권한을 대충 관리하면 안 되겠다는 것을 배웠습니다. 😭
+- 팀원 간의 포매터 설정 동기화는 되도록 빨리 합시다. 4자릿수 커밋 기록이 남아요. 😵
+- Next.js 도 써보고 싶었는데 이미 팀원들이 많이들 어려워서 사용하지 못했습니다. React 배운 후에 하는 프로젝트에서는 꼭 써보겠습니다. 😊
+- 보고와 커밋을 자주하고, 팀원들과 소통을 많이 하면서 프로젝트를 진행합시다. 🤝
+- 팀 프로젝트는 남들한테 맞춰가면서 뭘 해야할지 보다는 뭘 하고 싶은지를 생각하고 실천하는 것이 좋다고 생각합니다. 😎
 
 ---
 
