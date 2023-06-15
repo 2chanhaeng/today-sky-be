@@ -5,5 +5,5 @@ export default {
 };
 
 async function get(req: Request, res: Response) {
-  res.render("startpage");
+  res.render("index");
 }

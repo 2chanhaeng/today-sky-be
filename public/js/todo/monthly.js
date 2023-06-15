@@ -21,6 +21,13 @@ async function renderTodosByDate(root) {
     .map(([date, todos]) => Todos(date, todos))
     // todoList에 추가하기
     .forEach((todos) => root.appendChild(todos));
+  Object.entries(todosByDate)
+    // 링크로 변환
+    .map(([date]) => `/todo/${year}/${month}/${date}`)
+    // 해당 링크를 가지고 있는 앵커의 부모 div 찾기
+    .map((link) => document.querySelector(`a[href="${link}"]`).parentElement)
+    // 클래스 추가해서 표시하기
+    .forEach((date) => date.classList.add("written"));
 }
 /**
  * @typedef {Object} Todo

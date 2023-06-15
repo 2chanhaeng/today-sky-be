@@ -4,11 +4,6 @@ main {
   height: 100%;
 }
 
-.calendar.dates>div.diary-written {
-  background-color: var(--bg-color);
-  border-radius: 50%;
-}
-
 #diaries {
   margin-bottom: 0;
   -ms-overflow-style: none;

@@ -21,14 +21,14 @@ class AuthenticationError extends Error {
 // 로그인 GET
 async function get(req: Request, res: Response) {
   const user_id = await isLogin(req, res);
-  if (user_id) return res.redirect("/");
+  if (user_id) return res.redirect("/diary");
   res.render("login");
 }
 
 // 로그인 POST
 async function post(req: Request, res: Response) {
   const user_id = await isLogin(req, res);
-  if (user_id) return res.redirect("/");
+  if (user_id) return res.redirect("/diary");
   try {
     const { username, password } = req.body;
     const user = await db.user.findOne({
@@ -56,12 +56,12 @@ async function post(req: Request, res: Response) {
           maxAge: 60 * 60 * 24 * 30,
         })
         .cookie("refresh", refresh, { httpOnly: true, secure: true })
-        .redirect("/");
+        .redirect("/diary");
     } else {
       res
         .cookie("access", access, { httpOnly: true, secure: true })
         .cookie("refresh", refresh, { httpOnly: true, secure: true })
-        .redirect("/");
+        .redirect("/diary");
     }
   } catch (err) {
     console.log("콘솔 로깅", err);

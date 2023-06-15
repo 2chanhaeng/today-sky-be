@@ -26,11 +26,13 @@ div.calendar.weekdays {
   aspect-ratio: 1 / 1;
 }
 
-.calendar:where(.dates .weekdays)>div:nth-child(7n+1) {
+.calendar.dates>div:nth-child(7n+1),
+.calendar.weekdays>div:nth-child(7n+1) {
   color: red;
 }
 
-.calendar:where(.dates .weekdays)>div:nth-child(7n) {
+.calendar.dates>div:nth-child(7n),
+.calendar.weekdays>div:nth-child(7n) {
   color: blue;
 }
 
@@ -41,7 +43,7 @@ div.calendar.weekdays {
 
 .calendar.dates>div.today {
   box-sizing: border-box;
-  background-color: rgb(255, 128, 128);
+  border-radius: 50%;
   border: 0.5em solid rgb(255, 128, 128);
 }
 
@@ -73,6 +75,11 @@ div.calendar.weekdays {
 .calendar.dates>div>a:hover {
   background-color: rgb(0, 0, 0, 0.2);
   transition: background-color 0.3s ease-in-out;
+}
+
+.calendar.dates>div.written {
+  background-color: var(--bg-color);
+  border-radius: 50%;
 }
 
 footer.calendar {
