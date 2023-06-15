@@ -26,11 +26,13 @@ div.calendar.weekdays {
   aspect-ratio: 1 / 1;
 }
 
-.calendar:where(.dates .weekdays)>div:nth-child(7n+1) {
+.calendar.dates>div:nth-child(7n+1),
+.calendar.weekdays>div:nth-child(7n+1) {
   color: red;
 }
 
-.calendar:where(.dates .weekdays)>div:nth-child(7n) {
+.calendar.dates>div:nth-child(7n),
+.calendar.weekdays>div:nth-child(7n) {
   color: blue;
 }
 
