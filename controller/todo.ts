@@ -1,21 +1,9 @@
 import { Request, Response } from "express";
 import db from "@/models";
 import { TodoResponse } from "@/types/models";
-import {
-  isLogin,
-  validateDate,
-  getDateFromUrl,
-  today,
-  isFuture,
-  getImageNameIfHave,
-} from "@/utils";
+import { isLogin, validateDate, getDateFromUrl } from "@/utils";
 
 export default {
-  daily,
-  monthly,
-  redirectMonthly,
-  timeline,
-  calendar,
   post,
   get,
   gets,
@@ -25,49 +13,7 @@ export default {
   destroyAll,
 };
 
-// page
-
-// 일별 투두
-async function daily(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  let [year, month, date] = getDateFromUrl(req);
-  if (!validateDate(year, month, date)) {
-    return res.redirect(`/todo/${today().join("/")}`);
-  }
-  res.render("todo/daily", { year, month, date });
-}
-
-// 월별 투두
-async function monthly(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  let [year, month] = getDateFromUrl(req);
-  if (!validateDate(year, month, 1)) {
-    return res.redirect("/todo");
-  }
-  res.render("todo/monthly", { year, month });
-}
-
-// 월별 투두로 리다이렉트
-async function redirectMonthly(req: Request, res: Response) {
-  const [year, month] = today();
-  res.redirect(`/todo/${year}/${month}`);
-}
-
-// 투두 타임라인
-async function timeline(req: Request, res: Response) {
-  res.render("todo/timeline");
-}
-
-// 투두 캘린더
-async function calendar(req: Request, res: Response) {
-  res.render("todo/calendar");
-}
-
-// api
-
-//투두 생성
+// 투두 생성
 async function post(req: Request, res: Response) {
   const user_id = await isLogin(req, res);
   if (!user_id) return res.redirect("/login");
@@ -91,7 +37,7 @@ async function post(req: Request, res: Response) {
   }
 }
 
-// // 투두 조회
+// 투두 조회
 async function get(req: Request, res: Response) {
   const user_id = await isLogin(req, res);
   if (!user_id) return res.redirect("/login");
@@ -195,7 +141,7 @@ async function patch(req: Request, res: Response) {
   }
 }
 
-//투두 삭제
+// 투두 삭제
 async function destroy(req: Request, res: Response) {
   try {
     const { id } = req.params;
@@ -213,7 +159,7 @@ async function destroy(req: Request, res: Response) {
   }
 }
 
-//투두 전체 삭제
+// 투두 전체 삭제
 async function destroyAll(req: Request, res: Response) {
   try {
     const user_id = await isLogin(req, res);
