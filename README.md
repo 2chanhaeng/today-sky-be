@@ -23,14 +23,14 @@
   </thead>
   <tbody>
     <tr>
-      <td>/api/diary/<code>year</code>/<code>month</code></td>
+      <td>/diary/<code>year</code>/<code>month</code></td>
       <td>GET</td>
       <td><code>year</code>, <code>month</code></td>
       <td><code>year</code>년 <code>month</code> 월 일기</td>
       <td>READS</td>
     </tr>
     <tr>
-      <td rowspan="3">/api/diary/<code>year</code>/<code>month</code>/<code>date</code></td>
+      <td rowspan="3">/diary/<code>year</code>/<code>month</code>/<code>date</code></td>
       <td>GET</td>
       <td rowspan="3"><code>year</code>, <code>month</code>, <code>date</code></td>
       <td rowspan="3"><code>year</code>년 <code>month</code> 월 <code>date</code> 일 일기</td>
@@ -45,14 +45,14 @@
       <td>DELETE</td>
     </tr>
     <tr>
-      <td>/api/todo/<code>year</code>/<code>month</code></td>
+      <td>/todo/<code>year</code>/<code>month</code></td>
       <td>GET</td>
       <td><code>year</code>, <code>month</code></td>
       <td><code>year</code>년 <code>month</code> 월 할 일</td>
       <td>READS</td>
     </tr>
     <tr>
-      <td rowspan="2">/api/todo/<code>year</code>/<code>month</code>/<code>date</code></td>
+      <td rowspan="2">/todo/<code>year</code>/<code>month</code>/<code>date</code></td>
       <td>GET</td>
       <td rowspan="2"><code>year</code>, <code>month</code>, <code>date</code></td>
       <td rowspan="2"><code>year</code>년 <code>month</code> 월 <code>date</code> 일 할 일</td>
@@ -63,7 +63,7 @@
       <td>CREATE</td>
     </tr>
     <tr>
-      <td rowspan="3">/api/todo/<code>todo_id</code></td>
+      <td rowspan="3">/todo/<code>todo_id</code></td>
       <td>PUT</td>
       <td rowspan="3"><code>todo_id</code></td>
       <td rowspan="3"><code>todo_id</code>번 할 일</td>
@@ -78,7 +78,7 @@
       <td>DELETE</td>
     </tr>
     <tr>
-      <td rowspan="3">/api/todo/comment/<code>todo_id</code></td>
+      <td rowspan="3">/todo/comment/<code>todo_id</code></td>
       <td>POST</td>
       <td rowspan="3"><code>todo_id</code></td>
       <td rowspan="3"><code>todo_id</code> 번 할 일 소감</td>
