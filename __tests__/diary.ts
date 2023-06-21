@@ -1,5 +1,5 @@
-import { signup, getLoginSession, genIdPw, genPort } from "@/utils/testutil";
-import { today, getFromDB, createFromDB } from "@/utils";
+import { getLoginSession, genIdPw, genPort, genString } from "@/utils/testutil";
+import { today } from "@/utils";
 import db from "@/models";
 import { Diary } from "@/types/models";
 import setPort from "@/testapp";
@@ -7,36 +7,30 @@ import request from "supertest";
 
 const app = setPort(genPort());
 const url = (year: number, month: number, date: number) =>
-  `/api/diary/${year}/${month}/${date}`;
+  `/diary/${year}/${month}/${date}`;
 
 test("create diary", async () => {
   const [id, pw] = genIdPw();
-  await signup(id, pw, app);
   const cookie = await getLoginSession(id, pw, app);
   const [year, month, date] = today();
-  const [title, content] = genIdPw();
+  const content = genString();
   const res = await request(app)
     .post(url(year, month, date))
     .set("Cookie", cookie)
-    .send({
-      title,
-      content,
-      emotion: "1",
-    });
+    .send({ content });
   const resDiary = res.body as Diary;
-  expect(resDiary?.title).toBe(title);
-  const user = await getFromDB(db.user, {
+  const user = await db.user.findOne({
     where: { username: id },
   });
-  const dbDiary = await getFromDB(db.diary, {
+  const dbDiary = await db.diary.findOne({
     where: {
-      user_id: user?.id,
+      user_id: user?.dataValues?.id,
       year,
       month,
       date,
     },
   });
-  expect(dbDiary?.id).toBe(resDiary?.id);
+  expect(dbDiary?.dataValues?.content).toBe(resDiary?.content);
 });
 
 test("get diary", async () => {
