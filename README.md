@@ -7,15 +7,7 @@
 
 ## Page
 
-| Path                           | Description                             |
-| ------------------------------ | --------------------------------------- |
-| /                              | 메인 페이지                             |
-| /login                         | 로그인 페이지                           |
-| /signup                        | 회원가입 페이지                         |
-| /sky                           | /sky/`year`/`month` 리다이렉트          |
-| /sky/`year`/`month`            | `year`년 `month`월 일기 페이지          |
-| /sky/`year`/`month`/`day`      | `year`년 `month`월 `day`일 일기 페이지  |
-| /sky/`year`/`month`/`day`/star | `year`년 `month`월 `day`일 할 일 페이지 |
+[Today Sky FE](https://github.com/2chanhaeng/today-sky-fe) 로 이동.
 
 ## API
 
