@@ -26,6 +26,10 @@ export function genIdPw() {
   ];
 }
 
+export function genString() {
+  return Math.random().toString(36);
+}
+
 export function genPort() {
   return Math.floor(Math.random() * 10000) + 8000;
 }
