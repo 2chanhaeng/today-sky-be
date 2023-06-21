@@ -34,21 +34,27 @@ test("create diary", async () => {
 });
 
 test("get diary", async () => {
-  const [year, month, date] = today();
-  const diary = await getFromDB(db.diary, {
-    where: { year, month, date },
-  });
-  const user_id = diary?.user_id;
-  const user = await getFromDB(db.user, {
-    where: { id: user_id },
-  });
-  if (!user) return;
-  const [id, pw] = [user.username, user.password];
+  const [id, pw] = genIdPw();
   const cookie = await getLoginSession(id, pw, app);
+  const user = await db.user.findOne({
+    where: { username: id },
+  });
+  const user_id = user?.dataValues?.id!;
+  const [year, month, date] = today();
+  const content = genString();
+  await db.diary.create({
+    year,
+    month,
+    date,
+    content,
+    user_id,
+  });
+  const diary = await db.diary.findOne({
+    where: { user_id, year, month, date },
+  });
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
   const result = res.body as Diary;
-  expect(result?.title).toBe(diary?.title);
-  expect(result?.content).toBe(diary?.content);
+  expect(result?.content).toBe(diary?.dataValues.content);
 });
