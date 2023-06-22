@@ -5,7 +5,6 @@ import {
   isFuture,
   isLogin,
   getDateFromUrl,
-  getFromDB,
   getImageNameIfHave,
 } from "@/utils";
 import { DiaryResponse } from "@/types/models";
@@ -51,12 +50,21 @@ async function get(req: Request, res: Response) {
   if (!validateDate(year, month, date) || isFuture(year, month, date)) {
     return res.status(400).json({ error: "Invalid date" }).end();
   }
-  const diary = await getFromDB(db.diary, {
+  const diary = await db.diary.findOne({
     where: { user_id, year, month, date },
   });
+  if (!diary) {
+    return res
+      .status(404)
+      .json({
+        error: "일기가 없습니다.",
+        result: false,
+      })
+      .end();
+  }
   const image = getImageNameIfHave(year, month, date, user_id) || "";
-
-  res.json({ ...diary, image });
+  const { content, emotion_id } = diary.dataValues;
+  res.json({ content, emotion_id, image, result: true });
 }
 
 async function post(req: Request, res: Response) {
