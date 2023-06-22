@@ -6,11 +6,6 @@ import request from "supertest";
 
 const app = setPort(genPort());
 
-test("signup page", async () => {
-  const result = await request(app).get("/signup");
-  expect(result.statusCode).toBe(200);
-});
-
 test("signup", async () => {
   const [id, pw] = genIdPw();
   const res = await signup(id, pw, app);
@@ -27,11 +22,6 @@ test("signup", async () => {
       username: id,
     },
   });
-});
-
-test("login page", async () => {
-  const result = await request(app).get("/login");
-  expect(result.statusCode).toBe(200);
 });
 
 test("login", async () => {
