@@ -6,7 +6,7 @@ import { Todo } from "@/types/models";
 import setPort from "@/testapp";
 
 const app = setPort(genPort());
-const url = (...paths: number[]) => "/api/todo/" + paths.map(String).join("/");
+const url = (...paths: number[]) => "/todo/" + paths.map(String).join("/");
 
 test("create todo", async () => {
   const [id, pw] = genIdPw();
