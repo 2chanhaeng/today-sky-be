@@ -1,4 +1,4 @@
-import { getLoginSession, genIdPw, genPort, genString } from "@/utils/testutil";
+import { getLoginCookies, genIdPw, genPort, genString } from "@/utils/testutil";
 import { today } from "@/utils";
 import db from "@/models";
 import { Diary } from "@/types/models";
@@ -11,7 +11,7 @@ const url = (year: number, month: number, date: number) =>
 
 test("create diary", async () => {
   const [id, pw] = genIdPw();
-  const cookie = await getLoginSession(id, pw, app);
+  const cookie = await getLoginCookies(id, pw, app);
   const [year, month, date] = today();
   const content = genString();
   const res = await request(app)
@@ -35,7 +35,7 @@ test("create diary", async () => {
 
 test("get diary", async () => {
   const [id, pw] = genIdPw();
-  const cookie = await getLoginSession(id, pw, app);
+  const cookie = await getLoginCookies(id, pw, app);
   const user = await db.user.findOne({
     where: { username: id },
   });

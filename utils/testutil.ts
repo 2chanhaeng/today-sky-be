@@ -15,13 +15,13 @@ export function login(id: string, pw: string, app: Express) {
   });
 }
 
-export async function getLoginSession(id: string, pw: string, app: Express) {
+export async function getLoginCookies(id: string, pw: string, app: Express) {
   try {
     await signup(id, pw, app);
   } catch (e) {
     console.log(e);
   }
-  return (await login(id, pw, app)).header["set-cookie"];
+  return (await login(id, pw, app)).header["set-cookie"] as string[];
 }
 
 export function genIdPw() {
