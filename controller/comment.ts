@@ -21,8 +21,14 @@ async function post(req: Request, res: Response) {
     if (!todo) {
       return res.status(404).json({ message: "Todo가 존재하지 않음." });
     }
-    const { content, emotion_id } = req.body;
-    const comment = await db.comment.create({ todo_id, content, emotion_id });
+    const { content, emotion_id } = req.body as {
+      content: string;
+      emotion_id?: number;
+    };
+    const toCreate = emotion_id
+      ? { todo_id, content, emotion_id }
+      : { todo_id, content };
+    const comment = await db.comment.create(toCreate);
     if (comment.toJSON().content !== content) {
       return res.status(500).json({ message: "Comment 생성 실패." });
     }
