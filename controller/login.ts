@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import config from "@/config/token";
 import db from "@/models";
@@ -38,15 +38,15 @@ async function post(req: Request, res: Response) {
           maxAge: 60 * 60 * 24 * 30,
         })
         .cookie("refresh", refresh, { httpOnly: true, secure: true })
-        .redirect("/diary");
+        .send({ result: true });
     } else {
       res
         .cookie("access", access, { httpOnly: true, secure: true })
         .cookie("refresh", refresh, { httpOnly: true, secure: true })
-        .redirect("/diary");
+        .send({ result: true });
     }
   } catch (err) {
-    console.log("콘솔 로깅", err);
+    console.log("로그인 오류:", err);
     res.status(401).json({ message: "인증 오류" });
   }
 }
