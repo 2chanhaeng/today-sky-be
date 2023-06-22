@@ -2,7 +2,8 @@ import { signup, login, genIdPw, genPort } from "@/utils/testutil";
 import db from "@/models";
 import { User } from "@/types/models";
 import setPort from "@/testapp";
-import request from "supertest";
+import jwt from "jsonwebtoken";
+import config from "@/config/token";
 
 const app = setPort(genPort());
 
@@ -25,14 +26,25 @@ test("signup", async () => {
 });
 
 test("login", async () => {
-  const [id, pw] = genIdPw();
-  await signup(id, pw, app);
-  const res = await login(id, pw, app);
-  expect(res.statusCode).toBe(200);
+  const [un, pw] = genIdPw();
+  await signup(un, pw, app);
+  const res = await login(un, pw, app);
   expect(res.body).toEqual({ result: true });
-  db.user.destroy({
-    where: {
-      username: id,
-    },
-  });
+  expect(res.header["set-cookie"]).toBeTruthy();
+  const cookies = res.header["set-cookie"] as string[];
+  const access = cookies
+    .find((cookie) => cookie.startsWith("access="))
+    ?.split(";")[0]
+    .split("=")[1];
+  expect(access).toBeTruthy();
+  const refresh = cookies
+    .find((cookie) => cookie.startsWith("refresh="))
+    ?.split(";")[0]
+    .split("=")[1];
+  expect(refresh).toBeTruthy();
+  if (!access || !refresh) return;
+  const { id } = jwt.verify(access, config.ACCESS_TOKEN) as jwt.JwtPayload;
+  const user = await db.user.findOne({ where: { id } });
+  expect(user?.dataValues.username).toEqual(un);
+  expect(user?.dataValues.refresh).toEqual(refresh);
 });
