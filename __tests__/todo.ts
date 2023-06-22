@@ -31,23 +31,28 @@ test("create todo", async () => {
 });
 
 test("get todo", async () => {
-  const dbTodo = await getFromDB(db.todo, {});
-  if (!dbTodo) return;
-  const { year, month, date, user_id } = dbTodo;
-  const user = await getFromDB(db.user, {
-    where: { id: user_id },
+  const [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  const user_id = getUserIDfromCookie(cookie)!;
+  const [year, month, date] = today();
+  const content = genString();
+  const dbTodo = await db.todo.create({
+    year,
+    month,
+    date,
+    user_id,
+    content,
   });
-  if (!user) return;
-  const { username, password } = user;
-  const cookie = await getLoginSession(username, password, app);
+  if (!dbTodo) return;
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
-  const todos = res.body as Todo[];
-  expect(todos.length).toBeGreaterThan(0);
-  const resTodo = todos.find((todo) => todo.id === dbTodo.id);
-  expect(resTodo?.id).toBe(dbTodo?.id);
-  expect(resTodo?.content).toBe(dbTodo?.content);
+  const todos = res.body.todos as Todo[];
+  const { id } = dbTodo.dataValues;
+  const todo = todos.find((todo) => todo.id === dbTodo.dataValues.id);
+  expect(todo).toBeTruthy();
+  expect(todo?.id).toBe(id);
+  expect(todo?.content).toBe(content);
 });
 
 test("update todo", async () => {
