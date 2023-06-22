@@ -42,16 +42,17 @@ test("get diary", async () => {
   const user_id = user?.dataValues?.id!;
   const [year, month, date] = today();
   const content = genString();
-  await db.diary.create({
+  // TODO: emotion, image 추가 테스트 필요
+  const diaries = await db.diary.upsert({
     year,
     month,
     date,
     content,
     user_id,
   });
-  const diary = await db.diary.findOne({
-    where: { user_id, year, month, date },
-  });
+  if (!diaries) throw new Error("일기 생성 실패");
+  const diary = diaries[0];
+  diary.save();
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
