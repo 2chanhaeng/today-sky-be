@@ -5,7 +5,10 @@ export default function comment(
   sequelize: Sequelize,
   dataTypes: typeof DataTypes
 ) {
-  return sequelize.define<Model<Comment, Omit<Comment, "id">>, Comment>(
+  return sequelize.define<
+    Model<Comment, Omit<Comment, "id" | "emotion_id">>,
+    Comment
+  >(
     "comment",
     {
       id: {
@@ -28,7 +31,7 @@ export default function comment(
       },
       emotion_id: {
         type: dataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "emotion",
           key: "id",
