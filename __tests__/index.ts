@@ -9,7 +9,7 @@ const app = setPort(genPort());
 test("signup", async () => {
   const [id, pw] = genIdPw();
   const res = await signup(id, pw, app);
-  expect(res.statusCode).toBe(200);
+  expect(res.body).toEqual({ result: true });
   const result = await db.user.findOne({
     where: {
       username: id,
