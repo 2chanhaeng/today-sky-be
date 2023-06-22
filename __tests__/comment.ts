@@ -7,7 +7,7 @@ import setPort from "@/testapp";
 
 const app = setPort(genPort());
 const url = (...paths: number[]) =>
-  "/api/todo/comment" + paths.map(String).join("/");
+  "/todo/comment/" + paths.map(String).join("/");
 
 test("create comment", async () => {
   // 코멘트를 생성할 임의의 투두 불러오기
