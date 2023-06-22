@@ -1,6 +1,12 @@
 import request from "supertest";
 import { today, getFromDB } from "@/utils";
-import { signup, getLoginSession, genIdPw, genPort } from "@/utils/testutil";
+import {
+  getLoginCookies,
+  genIdPw,
+  genPort,
+  genString,
+  getUserIDfromCookie,
+} from "@/utils/testutil";
 import db from "@/models";
 import { Todo } from "@/types/models";
 import setPort from "@/testapp";
@@ -9,10 +15,9 @@ const app = setPort(genPort());
 const url = (...paths: number[]) => "/todo/" + paths.map(String).join("/");
 
 test("create todo", async () => {
-  const [id, pw] = genIdPw();
-  await signup(id, pw, app);
-  const cookie = await getLoginSession(id, pw, app);
-  const content = genIdPw().toString();
+  const [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  const content = genString();
   const [year, month, date] = today();
   const res = await request(app)
     .post(url(year, month, date))
@@ -20,13 +25,9 @@ test("create todo", async () => {
     .send({ content });
   const resTodo = res.body as Todo;
   expect(resTodo?.content).toBe(content);
-  const user = await getFromDB(db.user, {
-    where: { username: id },
-  });
-  const dbTodo = await getFromDB(db.todo, {
-    where: { user_id: user?.id },
-  });
-  expect(dbTodo?.id).toBe(resTodo?.id);
+  const user_id = getUserIDfromCookie(cookie)!;
+  const dbTodo = await db.todo.findOne({ where: { user_id } });
+  expect(dbTodo?.dataValues.id).toBe(resTodo?.id);
 });
 
 test("get todo", async () => {
