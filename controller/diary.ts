@@ -20,13 +20,16 @@ async function gets(req: Request, res: Response) {
   if (!user_id) return res.redirect("/login");
   const [year, month] = getDateFromUrl(req);
   if (!validateDate(year, month, 1) || isFuture(year, month, 1)) {
-    return res.status(400).json({ error: "Invalid date" }).end();
+    return res.status(400).json({ error: "Invalid date", result: false }).end();
   }
   const diariesResult = await db.diary.findAll({
     where: { user_id, year, month },
   });
   if (!diariesResult) {
-    return res.status(404).json({ error: "이번 달 일기가 없습니다." }).end();
+    return res
+      .status(404)
+      .json({ error: "이번 달 일기가 없습니다.", result: false })
+      .end();
   }
   const diaries = diariesResult
     .filter((diary) => diary)
@@ -40,7 +43,7 @@ async function gets(req: Request, res: Response) {
       acc[cur.date] = cur;
       return acc;
     }, {} as { [key: number]: DiaryResponse });
-  res.json(diaries);
+  res.json({ ...diaries, result: true });
 }
 
 async function get(req: Request, res: Response) {
@@ -86,8 +89,8 @@ async function post(req: Request, res: Response) {
     emotion_id,
   });
   if (!diary) {
-    return res.status(500).json({ error: "DB error" }).end();
+    return res.status(500).json({ error: "DB error", result: false }).end();
   }
   diary.save();
-  res.status(201).json({ isCreated, diary: diary.dataValues });
+  res.status(201).json({ isCreated, diary: diary.dataValues, result: true });
 }
