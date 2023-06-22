@@ -14,18 +14,17 @@ async function post(req: Request, res: Response) {
       username,
       password,
     });
-    const { id } = result.toJSON();
-    req.session.user = id; // 세션에 사용자 정보 저장
+    if (!result) throw new Error("회원가입 실패");
   } catch (e) {
-    console.log("아이디 중복", e);
-    res.send({ result: false });
+    console.log("회원가입 에러", e);
+    res.json({ result: false });
     return;
   }
   try {
-    res.redirect("/login");
+    res.json({ result: true });
   } catch (err) {
     console.log("회원가입 실패", err);
-    res.send({ result: false });
+    res.json({ result: false });
   }
 }
 
