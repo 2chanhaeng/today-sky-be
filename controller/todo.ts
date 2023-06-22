@@ -31,9 +31,9 @@ async function post(req: Request, res: Response) {
       content,
     });
     const todo = result.toJSON();
-    res.json(todo);
+    res.json({ ...todo, result: true });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", result: false });
   }
 }
 
@@ -64,8 +64,7 @@ async function get(req: Request, res: Response) {
         return { id, content, checked, comment, feel };
       })
   );
-  console.log(todosByDate);
-  res.status(200).json(todosByDate);
+  res.status(200).json({ todos: todosByDate, result: true });
 }
 
 // 월별 투두 조회
@@ -97,7 +96,7 @@ async function gets(req: Request, res: Response) {
       acc[date].push(await todo);
       return acc;
     }, Promise.resolve({} as { [date: number]: TodoResponse[] }));
-  res.status(200).json(todosByDate);
+  res.status(200).json({ todos: todosByDate, result: true });
 }
 
 //투두 수정
@@ -112,12 +111,13 @@ async function put(req: Request, res: Response) {
       { where: { id, user_id } }
     );
     if (!result) {
-      return res.status(404).json({ message: "Todo가 존재하지 않음." });
+      return res
+        .status(404)
+        .json({ message: "Todo가 존재하지 않음.", result: false });
     }
-
-    res.status(200).json({ message: "Todo 수정 완료." });
+    res.status(200).json({ result: true });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", result: false });
   }
 }
 
@@ -133,11 +133,13 @@ async function patch(req: Request, res: Response) {
       { where: { id, user_id } }
     );
     if (!result) {
-      return res.status(404).json({ message: "Todo가 존재하지 않음." });
+      return res
+        .status(404)
+        .json({ message: "Todo가 존재하지 않음.", result: false });
     }
-    res.status(200).json({ message: "Todo 수정 완료." });
+    res.status(200).json({ result: true });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", result: false });
   }
 }
 
@@ -153,9 +155,9 @@ async function destroy(req: Request, res: Response) {
     comment?.save();
     await todo?.destroy();
     todo?.save();
-    res.status(200).json({ message: "Todo 삭제 완료." });
+    res.status(200).json({ result: true });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", result: false });
   }
 }
 
@@ -176,11 +178,13 @@ async function destroyAll(req: Request, res: Response) {
     });
 
     if (result === 0) {
-      return res.status(404).json({ message: "Todo가 존재하지 않음." });
+      return res
+        .status(404)
+        .json({ message: "Todo가 존재하지 않음.", result: false });
     }
 
-    res.status(200).json({ message: "Todo 삭제 완료." });
+    res.status(200).json({ result: true });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error", result: false });
   }
 }
