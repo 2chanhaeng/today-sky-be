@@ -8,6 +8,8 @@ export default {
   post,
 };
 
+const aMonth = 60 * 60 * 24 * 30;
+
 async function post(req: Request, res: Response) {
   const user_id = await isLogin(req, res);
   if (user_id) return res.redirect("/diary");
@@ -23,7 +25,7 @@ async function post(req: Request, res: Response) {
       expiresIn: "1h",
     });
     const refresh = jwt.sign({ id }, config.REFRESH_TOKEN!, {
-      expiresIn: "7d",
+      expiresIn: "30d",
     });
     // DB에 refresh 토큰 저장
     await user.update({ refresh });
@@ -34,10 +36,12 @@ async function post(req: Request, res: Response) {
         .cookie("access", access, {
           httpOnly: true,
           secure: true,
-          // 1달 유지
-          maxAge: 60 * 60 * 24 * 30,
         })
-        .cookie("refresh", refresh, { httpOnly: true, secure: true })
+        .cookie("refresh", refresh, {
+          httpOnly: true,
+          secure: true,
+          maxAge: aMonth,
+        })
         .send({ result: true });
     } else {
       res
