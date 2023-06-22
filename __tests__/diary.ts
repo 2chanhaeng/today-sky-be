@@ -18,7 +18,7 @@ test("create diary", async () => {
     .post(url(year, month, date))
     .set("Cookie", cookie)
     .send({ content });
-  const resDiary = res.body as Diary;
+  const resDiary = res.body.diary as Diary;
   const user = await db.user.findOne({
     where: { username: id },
   });
