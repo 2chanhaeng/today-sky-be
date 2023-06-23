@@ -179,10 +179,10 @@ async function destroy(req: Request, res: Response) {
 async function destroyAll(req: Request, res: Response) {
   try {
     const user_id = await isLogin(req, res);
-    if (!user_id) return res.redirect("/login");
-    const { year, month, date } = req.params;
-    const result = await db.todo.destroy({
-      //year, month, date, user_id가 일치하는 todo를 모두 삭제
+    if (!user_id) throw new Unauthorized("Not Login");
+    const [year, month, date] = getDateFromUrl(req);
+    // 해당 날짜 유저의 todo를 모두 삭제
+    await db.todo.deleteMany({
       where: {
         year,
         month,
@@ -190,15 +190,8 @@ async function destroyAll(req: Request, res: Response) {
         user_id,
       },
     });
-
-    if (result === 0) {
-      return res
-        .status(404)
-        .json({ message: "Todo가 존재하지 않음.", result: false });
-    }
-
-    res.status(200).json({ result: true });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", result: false });
+    sendOrLogErrorMessage(res, error);
   }
 }
