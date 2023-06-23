@@ -15,7 +15,7 @@ export interface Diary {
 }
 
 export interface Todo {
-  id: number;
+  id: string;
   user_id: number;
   content: string;
   year: number;
