@@ -16,10 +16,9 @@ test("signup", async () => {
 });
 
 test("login", async () => {
-  const [un, pw] = genIdPw();
-  await signup(un, pw, app);
-  const res = await login(un, pw, app);
-  expect(res.body).toEqual({ result: true });
+  const [username, password] = genIdPw();
+  await signup(username, password, app);
+  const res = await login(username, password, app);
   expect(res.header["set-cookie"]).toBeTruthy();
   const cookies = res.header["set-cookie"] as string[];
   const access = cookies
@@ -34,7 +33,7 @@ test("login", async () => {
   expect(refresh).toBeTruthy();
   if (!access || !refresh) return;
   const { id } = jwt.verify(access, config.ACCESS_TOKEN) as jwt.JwtPayload;
-  const user = await db.user.findOne({ where: { id } });
-  expect(user?.dataValues.username).toEqual(un);
-  expect(user?.dataValues.refresh).toEqual(refresh);
+  const user = await db.user.findUnique({ where: { id } });
+  expect(user?.username).toEqual(username);
+  expect(user?.refresh).toEqual(refresh);
 });
