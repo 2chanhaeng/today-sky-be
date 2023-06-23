@@ -91,28 +91,25 @@ test("delete todo", async () => {
   if (!user_id) return;
   const [year, month, date] = today();
   const content = genString();
-  const dbTodo = await db.todo.create({ user_id, year, month, date, content });
-  const id = dbTodo?.dataValues.id;
+  const data = { user_id, year, month, date, content };
+  const { id } = await db.todo.create({ data });
   const res = await request(app).delete(url(id)).set("Cookie", cookie);
-  expect(res.body.result).toBe(true);
-  const deleted = await db.todo.findOne({
+  expect(res.body).toBe(true);
+  const deleted = await db.todo.findUnique({
     where: { id },
   });
   expect(deleted).toBeNull();
   await Promise.all(
     Array.from({ length: 10 })
       .map(genString)
-      .map(
-        async (content) =>
-          await db.todo.create({ user_id, year, month, date, content })
-      )
+      .map((content) => ({ user_id, year, month, date, content }))
+      .map(async (data) => await db.todo.create({ data }))
   );
-  const deleteAllRes = await request(app)
+  const deletesRes = await request(app)
     .delete(url(year, month, date))
     .set("Cookie", cookie);
-  expect(deleteAllRes.body.result).toBe(true);
-  const deletedAll = await db.todo.findAll({
-    where: { year, month, date, user_id },
-  });
-  expect(deletedAll.length).toBe(0);
+  expect(deletesRes.body).toBe(true);
+  const where = { year, month, date, user_id };
+  const deleteds = await db.todo.findMany({ where });
+  expect(deleteds.length).toBe(0);
 });
