@@ -42,8 +42,7 @@ export interface Image {
 }
 
 export interface TodoResponse {
-  date: number;
-  id: number;
+  id: string;
   content: string;
   checked?: boolean;
   comment?: string;

@@ -52,13 +52,14 @@ model Todo {
   comment Comment[]
   user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([year, month, date, user_id])
+  @@index([year, month, date, user_id], map: "todosOnDate")
+  @@index([year, month, user_id], map: "todosOnMonth")
+  @@index([user_id])
 }
 
 model Comment {
-  id         String   @id @default(uuid())
   content    String   @db.Text
-  todo_id    String
+  todo_id    String   @id
   emotion_id Int?
   todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
