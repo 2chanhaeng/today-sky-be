@@ -63,26 +63,20 @@ test("update todo", async () => {
   if (!user_id) return;
   const [year, month, date] = today();
   const old = genString();
-  const oldTodo = await db.todo.create({
-    user_id,
-    year,
-    month,
-    date,
-    content: old,
-  });
-  const id = oldTodo?.dataValues.id;
+  const data = { user_id, year, month, date, content: old };
+  const { id } = await db.todo.create({ data });
   const patchRes = await request(app)
     .patch(url(id))
     .set("Cookie", cookie)
     .send({ checked: true });
-  expect(patchRes.body?.result).toBe(true);
+  expect(patchRes.body).toBe(true);
   const content = genString();
   const putRes = await request(app)
     .put(url(id))
     .set("Cookie", cookie)
     .send({ content });
-  expect(putRes.body?.result).toBe(true);
-  const newTodo = await getFromDB(db.todo, {
+  expect(putRes.body).toBe(true);
+  const newTodo = await db.todo.findUnique({
     where: { id },
   });
   expect(newTodo?.id).toBe(id);
