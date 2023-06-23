@@ -15,7 +15,7 @@ export interface Diary {
 }
 
 export interface Todo {
-  id: number;
+  id: string;
   user_id: number;
   content: string;
   year: number;
@@ -42,8 +42,7 @@ export interface Image {
 }
 
 export interface TodoResponse {
-  date: number;
-  id: number;
+  id: string;
   content: string;
   checked?: boolean;
   comment?: string;
@@ -51,8 +50,12 @@ export interface TodoResponse {
 }
 
 export interface DiaryResponse {
-  date: number;
   content: string;
   feel?: string;
   image?: string;
+}
+
+export interface CommentRequest {
+  content: string;
+  emotion_id?: number;
 }

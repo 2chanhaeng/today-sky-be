@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 import config from "@/config/token";
-import db from "@/models";
+import db from "@/db";
 import isLogin from "@/utils/login";
+import { ConnectionError, BadRequest, NotFound } from "@/types/error";
 
 export default {
   post,
@@ -11,15 +13,17 @@ export default {
 const aMonth = 60 * 60 * 24 * 30;
 
 async function post(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (user_id) return res.redirect("/diary");
   try {
-    const { username, password } = req.body;
-    const user = await db.user.findOne({
+    const user_id = await isLogin(req, res);
+    if (user_id) throw new BadRequest("Already logged in");
+    const { username, password } = req.body as Prisma.UserCreateInput;
+    // 유저 정보 확인
+    const user = await db.user.findFirst({
       where: { username, password },
+      select: { id: true },
     });
-    if (!user) throw new Error("유저 정보 없음");
-    const { id } = user.dataValues;
+    if (!user) throw new NotFound({ username });
+    const { id } = user;
     // JWT 토큰 생성
     const access = jwt.sign({ id }, config.ACCESS_TOKEN!, {
       expiresIn: "1h",
@@ -28,29 +32,24 @@ async function post(req: Request, res: Response) {
       expiresIn: "30d",
     });
     // DB에 refresh 토큰 저장
-    await user.update({ refresh });
-
+    await db.user.update({ where: { id }, data: { refresh } });
+    const accessOptions = { httpOnly: true, secure: true };
+    const refreshOptions =
+      req.body.keep == "on"
+        ? { ...accessOptions, maxAge: aMonth }
+        : accessOptions;
     // 쿠키 생성 및 설정
-    if (req.body.keep == "on") {
-      res
-        .cookie("access", access, {
-          httpOnly: true,
-          secure: true,
-        })
-        .cookie("refresh", refresh, {
-          httpOnly: true,
-          secure: true,
-          maxAge: aMonth,
-        })
-        .send({ result: true });
-    } else {
-      res
-        .cookie("access", access, { httpOnly: true, secure: true })
-        .cookie("refresh", refresh, { httpOnly: true, secure: true })
-        .send({ result: true });
+    res
+      .status(200)
+      .cookie("access", access, accessOptions)
+      .cookie("refresh", refresh, refreshOptions)
+      .end();
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      const { status, message } = error;
+      return res.status(status).json({ message });
     }
-  } catch (err) {
-    console.log("로그인 오류:", err);
-    res.status(401).json({ message: "인증 오류" });
+    console.log("Unknown error in POST /login:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }

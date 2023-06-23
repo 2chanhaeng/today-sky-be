@@ -1,8 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import db from "@/models";
+import db from "@/db";
 import config from "@/config/token";
-import { getFromDB } from "./getDB";
 import { Unauthorized } from "@/types/error";
 
 export default async function isLogin(req: Request, res: Response) {
@@ -39,7 +38,7 @@ export default async function isLogin(req: Request, res: Response) {
     // refresh 토큰이 유효한 경우 유저 ID 반환
     const { id } = jwt.verify(refresh, config.REFRESH_TOKEN!) as jwt.JwtPayload;
     // DB에서 유저 refresh 가져오기
-    const user = await getFromDB(db.user, { where: { id } });
+    const user = await db.user.findUnique({ where: { id } });
     if (!user) throw new Error("유저 정보 없음");
     if (user.refresh !== refresh) {
       // refresh 토큰이 일치하지 않는 경우
