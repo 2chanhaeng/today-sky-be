@@ -6,11 +6,12 @@ import {
   isLogin,
   getDateFromUrl,
   getImageNameIfHave,
+  sendOrLogErrorMessage,
 } from "@/utils";
 import { DiaryResponse } from "@/types/models";
 import {
   BadRequest,
-  ConnectionError,
+  NotFound,
   Unauthorized,
   InternalServerError,
 } from "@/types/error";
@@ -55,27 +56,23 @@ async function gets(req: Request, res: Response) {
 }
 
 async function get(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  const [year, month, date] = getDateFromUrl(req);
-  if (!validateDate(year, month, date) || isFuture(year, month, date)) {
-    return res.status(400).json({ error: "Invalid date" }).end();
+  try {
+    // 로그인 여부 확인
+    const user_id = await isLogin(req, res);
+    if (!user_id) throw new Unauthorized("Not Login");
+    const [year, month, date] = getDateFromUrl(req);
+    if (!validateDate(year, month, date) || isFuture(year, month, date)) {
+      return res.status(400).json({ error: "Invalid date" }).end();
+    }
+    const id = { user_id, year, month, date };
+    const diary = await db.diary.findUnique({ where: { id } });
+    if (!diary) throw new NotFound(id);
+    const image = getImageNameIfHave(year, month, date, user_id) || "";
+    const { content, emotion_id } = diary;
+    res.json({ content, emotion_id, image });
+  } catch (error) {
+    sendOrLogErrorMessage(res, error);
   }
-  const diary = await db.diary.findOne({
-    where: { user_id, year, month, date },
-  });
-  if (!diary) {
-    return res
-      .status(404)
-      .json({
-        error: "일기가 없습니다.",
-        result: false,
-      })
-      .end();
-  }
-  const image = getImageNameIfHave(year, month, date, user_id) || "";
-  const { content, emotion_id } = diary.dataValues;
-  res.json({ content, emotion_id, image, result: true });
 }
 
 async function post(req: Request, res: Response) {
