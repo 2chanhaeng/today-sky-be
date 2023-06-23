@@ -10,7 +10,7 @@ export default {
   post,
 };
 
-// comment생성
+// comment
 async function post(req: Request, res: Response) {
   try {
     // 로그인 확인
@@ -22,12 +22,15 @@ async function post(req: Request, res: Response) {
     const hasTodo = { id: todo_id, user_id };
     const todo = await db.todo.findUnique({ where: { hasTodo } });
     if (!todo) throw new BadRequest("Todo does not exist");
+    // 요청에서 코멘트 내용 추출
     const update = req.body as CommentRequest;
     const where = { todo_id };
     if (update.content) {
+      // 코멘트 내용이 있으면 생성 또는 업데이트
       const create = { ...update, todo_id };
       await db.comment.upsert({ where, update, create });
     } else {
+      // 코멘트 내용이 없으면 삭제
       await db.comment.delete({ where });
     }
     res.status(200).json(true);
