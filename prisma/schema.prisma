@@ -22,7 +22,7 @@ model User {
 model Emotion {
   id      Int       @id @default(autoincrement())
   feel    String    @db.VarChar(255)
-  comment comment[]
+  comment Comment[]
   diary   Diary[]
 }
 
@@ -49,20 +49,20 @@ model Todo {
   date    Int
   user_id String
   checked Boolean   @default(false)
-  comment comment[]
+  comment Comment[]
   user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([year, month, date, user_id])
 }
 
-model comment {
-  id         Int      @id @default(autoincrement())
+model Comment {
+  id         String   @id @default(uuid())
   content    String   @db.Text
   todo_id    String
   emotion_id Int?
   todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([emotion_id], map: "emotion_id")
-  @@index([todo_id], map: "todo_id")
+  @@index([emotion_id])
+  @@index([todo_id])
 }
