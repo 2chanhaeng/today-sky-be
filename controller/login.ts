@@ -48,9 +48,9 @@ async function post(req: Request, res: Response) {
   } catch (error) {
     if (error instanceof ConnectionError) {
       const { status, message } = error;
-      return res.status(status).json({ error: message });
+      return res.status(status).json({ message });
     }
     console.log("Unknown error in POST /login:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 }
