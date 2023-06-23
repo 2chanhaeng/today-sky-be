@@ -43,3 +43,12 @@ export class AlreadyUsedUsername extends BadRequest {
     this.message = `${this.name}: ${username}`;
   }
 }
+
+/** 서버 내부 장애 시 발생 */
+export class InternalServerError extends ConnectionError {
+  constructor(message: string) {
+    super(message);
+    this.name = "Internal Server Error";
+    this.message = `${this.name}: ${message}`;
+  }
+}
