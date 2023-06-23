@@ -77,3 +77,23 @@ test("login", async () => {
   expect(user?.username).toEqual(username);
   expect(user?.refresh).toEqual(refresh);
 });
+
+test("login errors", async () => {
+  const [username, password] = genIdPw();
+  let res = await login(username, password, app);
+  expect(res.status).toEqual(404);
+  expect(res.body.message).toContain(username);
+  const cookie = await getLoginCookies(username, password, app);
+  res = await login(username, "wrongPassword", app);
+  expect(res.status).toEqual(404);
+  expect(res.body.message).toContain(username);
+  res = await login("wrongUsername", password, app);
+  expect(res.status).toEqual(404);
+  expect(res.body.message).toContain("wrongUsername");
+  res = await request(app)
+    .post("/login")
+    .send({ username, password })
+    .set("Cookie", cookie);
+  expect(res.status).toEqual(400);
+  expect(res.body.message).toContain("Already logged in");
+});
