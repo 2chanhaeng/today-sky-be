@@ -28,39 +28,15 @@ async function post(req: Request, res: Response) {
       emotion_id?: number;
     };
     const where = { todo_id };
+    if (content) {
       const update = { content, emotion_id };
       const create = { ...update, todo_id };
       await db.comment.upsert({ where, update, create });
+    } else {
+      await db.comment.delete({ where });
+    }
     res.status(200).json(true);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
   }
 }
-
-// comment 삭제
-async function destroy(req: Request, res: Response) {
-  try {
-    const user_id = await isLogin(req, res);
-    if (!user_id) return res.redirect("/login");
-    const todo_id = Number(req.params.todo_id);
-    const todo = await db.todo.findOne({ where: { user_id, id: todo_id } });
-    if (!todo) {
-      return res
-        .status(404)
-        .json({ message: "Todo가 존재하지 않음.", result: false });
-    }
-    const comment = await db.comment.findOne({ where: { todo_id } });
-    if (!comment) {
-      return res
-        .status(404)
-        .json({ message: "Comment가 존재하지 않음.", result: false });
-    }
-    await comment.destroy();
-    const check = await db.comment.findOne({ where: { todo_id } });
-    if (check) {
-      return res
-        .status(500)
-        .json({ message: "Comment 삭제 실패.", result: false });
-    }
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error", result: false });
