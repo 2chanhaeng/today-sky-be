@@ -166,15 +166,12 @@ async function destroy(req: Request, res: Response) {
     const { id } = req.params;
     const user_id = await isLogin(req, res);
     if (!user_id) return res.redirect("/login");
-    const todo = await db.todo.findOne({ where: { id, user_id } });
-    const comment = await db.comment.findOne({ where: { todo_id: id } });
-    await comment?.destroy();
-    comment?.save();
-    await todo?.destroy();
-    todo?.save();
-    res.status(200).json({ result: true });
+    const where = { hasTodo: { id, user_id } }; // user의 todo 소유권 확인
+    const todo = await db.todo.delete({ where });
+    if (!todo) throw new NotFound({ todo_id: id });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", result: false });
+    sendOrLogErrorMessage(res, error);
   }
 }
 
