@@ -127,3 +127,26 @@ test("delete comment", async () => {
   const dbComment = await db.comment.findOne({ where: { todo_id } });
   expect(dbComment).toBeNull();
 });
+
+// 쿠키 및 투두 생성 후 반환
+async function createTodoAndCookie() {
+  // username, password를 생성
+  const [username, password] = genIdPw();
+  // 유저로 로그인을 하고 쿠키(로그인 세션) 추출
+  const cookie = await getLoginCookies(username, password, app);
+  // 쿠키로 유저 아이디를 추출
+  const user_id = getUserIDfromCookie(cookie)!;
+  // 임의의 날짜로 오늘 날짜를 가져옴
+  const [year, month, date] = today();
+  // 임의의 투두 생성 후 id 추출
+  const data = {
+    year,
+    month,
+    date,
+    user_id,
+    content: genString(),
+  };
+  const select = { id: true };
+  const { id: todo_id } = await db.todo.create({ data, select });
+  return { cookie, todo_id };
+}
