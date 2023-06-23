@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = "mysql://u1:1@localhost/exerdb"
+}
+
+model user {
+  id       Int     @id @default(autoincrement())
+  username String  @unique(map: "username") @db.VarChar(255)
+  password String  @db.VarChar(255)
+  refresh  String? @db.VarChar(255)
+  diary    diary[]
+  todo     todo[]
+}
+
+model emotion {
+  id      Int       @id @default(autoincrement())
+  feel    String    @db.VarChar(255)
+  comment comment[]
+  diary   diary[]
+}
+
+model diary {
+  content    String   @db.Text
+  year       Int
+  month      Int
+  date       Int
+  emotion_id Int?
+  user_id    Int
+  emotion    emotion? @relation(fields: [emotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "diary_ibfk_1")
+  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "diary_ibfk_2")
+
+  @@id([year, month, date, user_id])
+  @@index([emotion_id], map: "emotion_id")
+  @@index([user_id], map: "user_id")
+}
+
+model todo {
+  id      Int       @id @default(autoincrement())
+  content String    @db.Text
+  year    Int
+  month   Int
+  date    Int
+  user_id Int
+  checked Boolean   @default(false)
+  comment comment[]
+  user    user      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "todo_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model comment {
+  id         Int      @id @default(autoincrement())
+  content    String   @db.Text
+  todo_id    Int
+  emotion_id Int?
+  todo       todo     @relation(fields: [todo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_1")
+  emotion    emotion? @relation(fields: [emotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_2")
+
+  @@index([emotion_id], map: "emotion_id")
+  @@index([todo_id], map: "todo_id")
+}
