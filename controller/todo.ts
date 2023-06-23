@@ -44,32 +44,42 @@ async function post(req: Request, res: Response) {
 
 // 투두 조회
 async function get(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  let [year, month, date] = getDateFromUrl(req);
-  if (!validateDate(year, month, date)) {
-    return res.redirect("/todo");
-  }
-  const todos = await db.todo.findAll({
-    where: { year, month, date, user_id },
-    order: [["id", "DESC"]],
-  });
-  const todosByDate = await Promise.all(
-    todos
-      .map((todo) => todo.dataValues)
-      .map(async ({ id, checked, content, date }) => {
-        const commentr = await db.comment.findOne({ where: { todo_id: id } });
-        const comment = commentr?.dataValues.content;
-        const emotion_id = commentr?.dataValues.emotion_id;
+  try {
+    // 로그인 확인
+    const user_id = await isLogin(req, res);
+    if (!user_id) throw new Unauthorized("Not Login");
+    // 날짜 확인
+    let [year, month, date] = getDateFromUrl(req);
+    if (!validateDate(year, month, date)) {
+      throw new BadRequest("Invalid date");
+    }
+    // DB에서 해당 날짜의 투두 조회
+    const todos = await db.todo.findMany({
+      where: { year, month, date, user_id },
+      orderBy: { date: "asc", id: "asc" },
+    });
+    // 필요한 데이터를 합쳐 객체화
+    const todosByDate = await Promise.all(
+      todos.map(async ({ id, checked, content, date }) => {
+        // 해당 투두의 코멘트 조회
+        const commentr = await db.comment.findUnique({
+          where: { todo_id: id },
+        });
+        const comment = commentr?.content;
+        // 해당 투두의 감정 조회
+        const emotion_id = commentr?.emotion_id;
         if (!emotion_id) return { date, id, content, checked, comment };
-        const emotion = await db.emotion.findOne({ where: { id: emotion_id } });
-        const feel = emotion
-          ? `/public/images/feel/${emotion.dataValues.feel}.png`
-          : "";
+        const emotion = await db.emotion.findUnique({
+          where: { id: emotion_id },
+        });
+        const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
         return { id, content, checked, comment, feel };
       })
-  );
-  res.status(200).json({ todos: todosByDate, result: true });
+    );
+    res.status(200).json(todosByDate);
+  } catch (error) {
+    sendOrLogErrorMessage(res, error);
+  }
 }
 
 // 월별 투두 조회
