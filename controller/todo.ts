@@ -34,7 +34,8 @@ async function post(req: Request, res: Response) {
     const { content } = req.body;
     // DB에 저장
     const data = { year, month, date, content, user_id };
-    const todo = await db.todo.create({ data });
+    const select = { id: true };
+    const todo = await db.todo.create({ data, select });
     // 결과 반환
     res.status(200).json(todo);
   } catch (error) {
