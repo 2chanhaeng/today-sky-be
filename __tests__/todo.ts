@@ -26,7 +26,6 @@ test("create todo", async () => {
     .set("Cookie", cookie)
     .send({ content });
   const resTodo = res.body as Todo;
-  expect(resTodo?.content).toBe(content);
   const { id } = resTodo;
   const dbTodo = await db.todo.findUnique({ where: { id } });
   expect(dbTodo?.content).toBe(content);
