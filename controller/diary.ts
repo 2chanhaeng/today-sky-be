@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "@/models";
+import { PrismaClient } from "@prisma/client";
 import {
   validateDate,
   isFuture,
@@ -8,6 +8,14 @@ import {
   getImageNameIfHave,
 } from "@/utils";
 import { DiaryResponse } from "@/types/models";
+import {
+  BadRequest,
+  ConnectionError,
+  Unauthorized,
+  InternalServerError,
+} from "@/types/error";
+
+const db = new PrismaClient();
 
 export default {
   get,
@@ -71,26 +79,43 @@ async function get(req: Request, res: Response) {
 }
 
 async function post(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  const [year, month, date] = getDateFromUrl(req);
-  const { emotion, content } = req.body;
-  if (!validateDate(year, month, date) || isFuture(year, month, date)) {
-    return res.status(400).json({ error: "Invalid date" }).end();
+  try {
+    // 로그인 여부 확인
+    const user_id = await isLogin(req, res);
+    // 로그인이 안 되어 있으면 401 응답
+    if (!user_id) throw new Unauthorized("Not Login");
+    // 요청 url에서 year, month, date 추출
+    const [year, month, date] = getDateFromUrl(req);
+    // year, month, date가 유효하지 않거나 미래의 날짜이면 400 응답
+    if (!validateDate(year, month, date) || isFuture(year, month, date)) {
+      throw new BadRequest("Invalid date");
+    }
+    // 요청 body에서 emotion, content 추출
+    const { emotion, content } = req.body;
+    // content가 없으면 400 응답
+    if (!content) throw new BadRequest("Content is required");
+    // emotion이 있으면 emotion_id를 number로 변환
+    const emotion_id = emotion ? Number(emotion) : undefined;
+    // 일기의 id 값 (user_id, year, month, date)
+    const id = { user_id, year, month, date };
+    // 일기를 생성하거나 수정
+    const diary = await db.diary.upsert({
+      create: { user_id, year, month, date, content, emotion_id },
+      where: { id },
+      update: { content, emotion_id },
+    });
+    // 일기 생성에 실패하면 500 응답
+    if (!diary) throw new InternalServerError("Diary is not created");
+    // 일기 생성에 성공하면 201 응답
+    res.status(201).json(diary);
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      // ConnectionError 에러라면 status와 message를 json으로 응답
+      const { status, message } = error;
+      return res.status(status).json({ message }).end();
+    }
+    // ConnectionError가 아니라면 알려지지 않은 에러이므로 로그를 남기고 500 응답
+    console.error("Error in POST /diary", error);
+    return res.status(500).json({ message: "Internal Server Error" }).end();
   }
-  const emotion_id = emotion ? Number(emotion) : undefined;
-
-  const [diary, isCreated] = await db.diary.upsert({
-    user_id,
-    year,
-    month,
-    date,
-    content,
-    emotion_id,
-  });
-  if (!diary) {
-    return res.status(500).json({ error: "DB error", result: false }).end();
-  }
-  diary.save();
-  res.status(201).json({ isCreated, diary: diary.dataValues, result: true });
 }
