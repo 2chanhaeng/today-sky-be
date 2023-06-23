@@ -1,46 +1,31 @@
 import fs from "fs";
 import path from "path";
 import crpyto from "crypto";
-import { Dialect } from "sequelize";
 
-const DIALECT = process.env.DB_DIALECT as Dialect;
 const dbConfigs = {
   production: {
-    username: process.env.DB_USERNAME!,
-    password: process.env.DB_PASSWORD!,
-    database: process.env.DB_DATABASE!,
-    host: process.env.DB_HOST!,
-    dialect: DIALECT,
-    logging: false,
+    db_url: process.env.PROD_DB_URL || "",
   },
   development: {
-    username: process.env.DEV_DB_USERNAME!,
-    password: process.env.DEV_DB_PASSWORD!,
-    database: process.env.DEV_DB_DATABASE!,
-    host: process.env.DEV_DB_HOST!,
-    dialect: DIALECT,
-    logging: false,
+    db_url: process.env.DEV_DB_URL || "",
   },
   test: {
-    username: process.env.TEST_DB_USERNAME!,
-    password: process.env.TEST_DB_PASSWORD!,
-    database: process.env.TEST_DB_DATABASE!,
-    host: process.env.TEST_DB_HOST!,
-    dialect: DIALECT,
-    logging: false,
+    db_url: process.env.TEST_DB_URL || "",
   },
 };
 
-function setDbConfig(dbConfig: string) {
-  const dbConfigString = JSON.stringify(dbConfigs);
-  fs.writeFile(
-    dbConfig,
-    `import DBConfigs from "@/types/config";export default<DBConfigs>${dbConfigString};`,
-    "utf-8",
-    (err) => {
-      if (err) console.log(err);
-    }
-  );
+function setDbUrl() {
+  if (!process.env.DATABASE_URL) {
+    const node_env = process.env.NODE_ENV || "development";
+    console.log("node_env:", node_env);
+    const db_url = dbConfigs[node_env as keyof typeof dbConfigs].db_url;
+    console.log("db_url:", db_url);
+    fs.appendFileSync(
+      path.resolve(__dirname, "../.env"),
+      `\nDATABASE_URL="${db_url}"\n`
+    );
+    process.env.DATABASE_URL = db_url;
+  }
 }
 
 function setTokenConfig(tokenConfig: string) {
@@ -51,7 +36,7 @@ function setTokenConfig(tokenConfig: string) {
     // save in .env
     fs.appendFileSync(
       path.resolve(__dirname, "../.env"),
-      `\nACCESS_TOKEN=${access}\nREFRESH_TOKEN=${refresh}\n`
+      `\nACCESS_TOKEN="${access}"\nREFRESH_TOKEN="${refresh}"\n`
     );
     // set env
     process.env.ACCESS_TOKEN = access;
@@ -72,9 +57,8 @@ function setTokenConfig(tokenConfig: string) {
 export default async function setConfig(configDir: string) {
   // create config directory
   fs.mkdirSync(configDir, { recursive: true });
-  const dbConfig = path.resolve(configDir, "index.ts");
   const tokenConfig = path.resolve(configDir, "token.ts");
 
-  setDbConfig(dbConfig);
+  setDbUrl();
   setTokenConfig(tokenConfig);
 }
