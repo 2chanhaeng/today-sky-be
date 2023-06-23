@@ -7,8 +7,6 @@ const db = new PrismaClient();
 
 export default {
   post,
-  put,
-  destroy,
 };
 
 // comment생성
