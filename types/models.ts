@@ -54,3 +54,8 @@ export interface DiaryResponse {
   feel?: string;
   image?: string;
 }
+
+export interface CommentRequest {
+  content: string;
+  emotion_id?: number;
+}

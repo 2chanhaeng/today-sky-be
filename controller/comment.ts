@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { isLogin, sendOrLogErrorMessage } from "@/utils";
 import { BadRequest, Unauthorized } from "@/types/error";
+import { CommentRequest } from "@/types/models";
 
 const db = new PrismaClient();
 
@@ -21,13 +22,9 @@ async function post(req: Request, res: Response) {
     const hasTodo = { id: todo_id, user_id };
     const todo = await db.todo.findUnique({ where: { hasTodo } });
     if (!todo) throw new BadRequest("Todo does not exist");
-    const { content, emotion_id } = req.body as {
-      content: string;
-      emotion_id?: number;
-    };
+    const update = req.body as CommentRequest;
     const where = { todo_id };
-    if (content) {
-      const update = { content, emotion_id };
+    if (update.content) {
       const create = { ...update, todo_id };
       await db.comment.upsert({ where, update, create });
     } else {
