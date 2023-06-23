@@ -1,5 +1,5 @@
 import request from "supertest";
-import { PrismaClient } from "@prisma/client";
+import db from "@/db";
 import { today } from "@/utils";
 import {
   getLoginCookies,
@@ -11,7 +11,6 @@ import {
 import setPort from "@/testapp";
 
 const app = setPort(genPort());
-const db = new PrismaClient();
 const url = (...paths: string[]) =>
   "/todo/comment/" + paths.map(String).join("/");
 

@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { Prisma } from "@prisma/client";
 import config from "@/config/token";
-import { PrismaClient, Prisma } from "@prisma/client";
+import db from "@/db";
 import isLogin from "@/utils/login";
 import { ConnectionError, BadRequest, NotFound } from "@/types/error";
-
-const db = new PrismaClient();
 
 export default {
   post,

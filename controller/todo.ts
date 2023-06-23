@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import db from "@/db";
 import { TodoResponse } from "@/types/models";
 import {
   isLogin,
@@ -8,8 +8,6 @@ import {
   sendOrLogErrorMessage,
 } from "@/utils";
 import { Unauthorized, BadRequest, NotFound } from "@/types/error";
-
-const db = new PrismaClient();
 
 export default {
   post,

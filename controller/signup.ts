@@ -1,13 +1,12 @@
 import { Request, Response } from "express";
-import { PrismaClient, Prisma } from "@prisma/client";
+import db from "@/db";
+import { Prisma } from "@prisma/client";
 import isLogin from "@/utils/login";
 import {
   ConnectionError,
   BadRequest,
   AlreadyUsedUsername,
 } from "@/types/error";
-
-const db = new PrismaClient();
 
 export default {
   post,

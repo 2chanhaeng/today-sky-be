@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import db from "@/db";
 import {
   validateDate,
   isFuture,
@@ -15,8 +15,6 @@ import {
   Unauthorized,
   InternalServerError,
 } from "@/types/error";
-
-const db = new PrismaClient();
 
 export default {
   get,

@@ -6,13 +6,12 @@ import {
   getUserIDfromCookie,
 } from "@/utils/testutil";
 import { today } from "@/utils";
-import { PrismaClient } from "@prisma/client";
+import db from "@/db";
 import { Diary } from "@/types/models";
 import setPort from "@/testapp";
 import request from "supertest";
 
 const app = setPort(genPort());
-const db = new PrismaClient();
 const url = (year: number, month: number, date: number) =>
   `/diary/${year}/${month}/${date}`;
 

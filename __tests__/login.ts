@@ -5,14 +5,13 @@ import {
   genPort,
   getLoginCookies,
 } from "@/utils/testutil";
-import { PrismaClient } from "@prisma/client";
+import db from "@/db";
 import setPort from "@/testapp";
 import jwt from "jsonwebtoken";
 import config from "@/config/token";
 import request from "supertest";
 
 const app = setPort(genPort());
-const db = new PrismaClient();
 
 test("login", async () => {
   const [username, password] = genIdPw();

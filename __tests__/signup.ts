@@ -1,10 +1,9 @@
-import { signup, genIdPw, genPort, getLoginCookies } from "@/utils/testutil";
-import { PrismaClient } from "@prisma/client";
-import setPort from "@/testapp";
 import request from "supertest";
+import db from "@/db";
+import { signup, genIdPw, genPort, getLoginCookies } from "@/utils/testutil";
+import setPort from "@/testapp";
 
 const app = setPort(genPort());
-const db = new PrismaClient();
 
 test("signup", async () => {
   const [username, password] = genIdPw();

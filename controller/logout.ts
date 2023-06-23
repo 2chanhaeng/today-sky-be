@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import db from "@/models";
+import db from "@/db";
 import isLogin from "@/utils/login";
 
 export default {
