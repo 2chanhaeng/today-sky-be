@@ -34,3 +34,12 @@ export class BadRequest extends ConnectionError {
   }
   status = 400;
 }
+
+/** 회원가입 중 이미 사용 중인 username으로 가입 요청 시 발생 */
+export class AlreadyUsedUsername extends BadRequest {
+  constructor(username: string) {
+    super("Already used username");
+    this.name = "Already used username";
+    this.message = `${this.name}: ${username}`;
+  }
+}
