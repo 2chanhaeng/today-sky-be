@@ -34,7 +34,7 @@ export function getUserIDfromCookie(cookies: string[]) {
     ?.split(";")[0]
     .split("=")[1];
   if (!access) return;
-  const { id } = jwt.verify(access, ACCESS_TOKEN) as { id: number };
+  const { id } = jwt.verify(access, ACCESS_TOKEN) as jwt.JwtPayload;
   return id;
 }
 
