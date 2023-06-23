@@ -3,6 +3,9 @@ import jwt from "jsonwebtoken";
 import config from "@/config/token";
 import { PrismaClient, Prisma } from "@prisma/client";
 import isLogin from "@/utils/login";
+import { ConnectionError, BadRequest, NotFound } from "@/types/error";
+
+const db = new PrismaClient();
 
 export default {
   post,
@@ -11,16 +14,16 @@ export default {
 const aMonth = 60 * 60 * 24 * 30;
 
 async function post(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (user_id) return res.redirect("/diary");
   try {
+    const user_id = await isLogin(req, res);
+    if (user_id) throw new BadRequest("Already logged in");
     const { username, password } = req.body as Prisma.UserCreateInput;
     // 유저 정보 확인
     const user = await db.user.findFirst({
       where: { username, password },
       select: { id: true },
     });
-    if (!user) throw new Error("유저 정보 없음");
+    if (!user) throw new NotFound({ username });
     const { id } = user;
     // JWT 토큰 생성
     const access = jwt.sign({ id }, config.ACCESS_TOKEN!, {
@@ -42,9 +45,12 @@ async function post(req: Request, res: Response) {
       .cookie("access", access, accessOptions)
       .cookie("refresh", refresh, refreshOptions)
       .end();
+  } catch (error) {
+    if (error instanceof ConnectionError) {
+      const { status, message } = error;
+      return res.status(status).json({ error: message });
     }
-  } catch (err) {
-    console.log("로그인 오류:", err);
-    res.status(401).json({ message: "인증 오류" });
+    console.log("Unknown error in POST /login:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }
