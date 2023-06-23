@@ -73,7 +73,7 @@ async function isDupl(req: Request, res: Response) {
       // DB에서 username 검색
       const result = await db.user.findUnique({ where: { username } });
       // 검색 결과를 json 형태로 응답
-      return res.status(200).json({ result: !!result }).end();
+      return res.status(200).json({ isDupl: !!result }).end();
     }
   } catch (error) {
     // 에러 로그 기록
