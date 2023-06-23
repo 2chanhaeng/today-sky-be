@@ -1,7 +1,15 @@
 import { Request, Response } from "express";
-import db from "@/models";
+import { PrismaClient } from "@prisma/client";
 import { TodoResponse } from "@/types/models";
-import { isLogin, validateDate, getDateFromUrl } from "@/utils";
+import {
+  isLogin,
+  validateDate,
+  getDateFromUrl,
+  sendOrLogErrorMessage,
+} from "@/utils";
+import { Unauthorized, BadRequest } from "@/types/error";
+
+const db = new PrismaClient();
 
 export default {
   post,
@@ -15,25 +23,22 @@ export default {
 
 // 투두 생성
 async function post(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  const [year, month, date] = getDateFromUrl(req);
-  if (!validateDate(year, month, date)) {
-    return res.status(400).json({ message: "날짜 형식이 잘못됨." });
-  }
-  const { content } = req.body;
   try {
-    const result = await db.todo.create({
-      user_id,
-      year,
-      month,
-      date,
-      content,
-    });
-    const todo = result.toJSON();
-    res.json({ ...todo, result: true });
+    // 로그인 확인
+    const user_id = await isLogin(req, res);
+    if (!user_id) throw new Unauthorized("Not Login");
+    // 날짜 확인
+    const [year, month, date] = getDateFromUrl(req);
+    if (!validateDate(year, month, date)) throw new BadRequest("Invalid date");
+    // 요청에서 content 추출
+    const { content } = req.body;
+    // DB에 저장
+    const data = { year, month, date, content, user_id };
+    const todo = await db.todo.create({ data });
+    // 결과 반환
+    res.status(200).json(todo);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", result: false });
+    sendOrLogErrorMessage(res, error);
   }
 }
 
