@@ -24,6 +24,23 @@ test("signup with already used username", async () => {
   expect(res.body).toEqual({ isDupl: true });
 });
 
+test("signup errors", async () => {
+  let username = " ";
+  let password = "asd";
+  let res = await signup(username, password, app);
+  expect(res.status).toEqual(400);
+  expect(res.body.message).toContain("Invalid username or password");
+  (username = "asd"), (password = "");
+  res = await signup(username, password, app);
+  expect(res.status).toEqual(400);
+  expect(res.body.message).toContain("Invalid username or password");
+  let user = await db.user.findFirstOrThrow();
+  res = await signup(user.username, user.password, app);
+  expect(res.status).toEqual(400);
+  expect(res.body.message).toContain("Already used username");
+  expect(res.body.message).toContain(user.username);
+});
+
 test("login", async () => {
   const [username, password] = genIdPw();
   await signup(username, password, app);
