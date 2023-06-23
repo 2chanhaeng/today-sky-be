@@ -84,34 +84,45 @@ async function get(req: Request, res: Response) {
 
 // 월별 투두 조회
 async function gets(req: Request, res: Response) {
-  const user_id = await isLogin(req, res);
-  if (!user_id) return res.redirect("/login");
-  let [year, month] = getDateFromUrl(req);
-  if (!validateDate(year, month, 1)) {
-    return res.redirect("/todo");
+  try {
+    // 로그인 확인
+    const user_id = await isLogin(req, res);
+    if (!user_id) throw new Unauthorized("Not Login");
+    // 날짜 확인
+    let [year, month] = getDateFromUrl(req);
+    if (!validateDate(year, month, 1)) {
+      return res.redirect("/todo");
+    }
+    // DB에서 해당 월의 투두 조회
+    const todos = await db.todo.findMany({ where: { year, month, user_id } });
+    // 필요한 데이터를 합쳐 객체화
+    const todosByDate = await todos
+      .map(async ({ id, checked, content, date }) => {
+        // 해당 투두의 코멘트 조회
+        const commentr = await db.comment.findUnique({
+          where: { todo_id: id },
+        });
+        const comment = commentr?.content;
+        // 해당 투두의 감정 조회
+        const emotion_id = commentr?.emotion_id;
+        if (!emotion_id) return { date, id, content, checked, comment };
+        const emotion = await db.emotion.findUnique({
+          where: { id: emotion_id },
+        });
+        const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
+        return { date, id, content, checked, comment, feel };
+      })
+      .reduce(async (pracc, todo) => {
+        const { date, ...curr } = await todo;
+        const acc = await pracc;
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(curr);
+        return acc;
+      }, Promise.resolve({} as { [date: number]: TodoResponse[] }));
+    res.status(200).json(todosByDate);
+  } catch (error) {
+    sendOrLogErrorMessage(res, error);
   }
-  const todos = await db.todo.findAll({ where: { year, month, user_id } });
-  const todosByDate = await todos
-    .map((todo) => todo.dataValues)
-    .map(async ({ id, checked, content, date }) => {
-      const commentr = await db.comment.findOne({ where: { todo_id: id } });
-      const comment = commentr?.dataValues.content;
-      const emotion_id = commentr?.dataValues.emotion_id;
-      if (!emotion_id) return { date, id, content, checked, comment };
-      const emotion = await db.emotion.findOne({ where: { id: emotion_id } });
-      const feel = emotion
-        ? `/public/images/feel/${emotion.dataValues.feel}.png`
-        : "";
-      return { date, id, content, checked, comment, feel };
-    })
-    .reduce(async (pracc, todo) => {
-      const { date } = await todo;
-      const acc = await pracc;
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(await todo);
-      return acc;
-    }, Promise.resolve({} as { [date: number]: TodoResponse[] }));
-  res.status(200).json({ todos: todosByDate, result: true });
 }
 
 //투두 수정
