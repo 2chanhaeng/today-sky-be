@@ -14,3 +14,13 @@ export class Unauthorized extends ConnectionError {
   }
   status = 401;
 }
+
+/** 서버 내 리소스를 찾을 수 없을 시 발생 */
+export class NotFound extends ConnectionError {
+  constructor(...args: object[]) {
+    super("Not Found");
+    this.name = "Not Found";
+    this.message = `${this.name} ${JSON.stringify(args)}`;
+  }
+  status = 404;
+}
