@@ -24,3 +24,13 @@ export class NotFound extends ConnectionError {
   }
   status = 404;
 }
+
+/** 잘못된 요청 시 발생 */
+export class BadRequest extends ConnectionError {
+  constructor(message: string) {
+    super(message);
+    this.name = "Bad Request";
+    this.message = `${this.name}: ${message}`;
+  }
+  status = 400;
+}
