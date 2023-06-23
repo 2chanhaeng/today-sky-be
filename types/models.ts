@@ -51,7 +51,6 @@ export interface TodoResponse {
 }
 
 export interface DiaryResponse {
-  date: number;
   content: string;
   feel?: string;
   image?: string;
