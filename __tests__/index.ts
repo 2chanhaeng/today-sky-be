@@ -3,6 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import setPort from "@/testapp";
 import jwt from "jsonwebtoken";
 import config from "@/config/token";
+import request from "supertest";
 
 const app = setPort(genPort());
 const db = new PrismaClient();
@@ -13,6 +14,14 @@ test("signup", async () => {
   expect(res.status).toEqual(200);
   const user = await db.user.findUnique({ where: { username } });
   expect(user?.password).toBe(password);
+});
+
+test("signup with already used username", async () => {
+  const [username, password] = genIdPw();
+  await signup(username, password, app);
+  const res = await request(app).get("/signup/is-dupl").query({ username });
+  expect(res.status).toEqual(200);
+  expect(res.body).toEqual({ isDupl: true });
 });
 
 test("login", async () => {
