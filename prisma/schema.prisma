@@ -12,21 +12,21 @@ model User {
   username String  @unique @db.VarChar(255)
   password String  @db.VarChar(255)
   refresh  String? @db.VarChar(255)
-  diary    diary[]
   todo     todo[]
   // TODO:
   // salt     String  @db.VarChar(255)
   // email    String  @unique @db.VarChar(255)
+  diary    Diary[]
 }
 
 model Emotion {
   id      Int       @id @default(autoincrement())
   feel    String    @db.VarChar(255)
   comment comment[]
-  diary   diary[]
+  diary   Diary[]
 }
 
-model diary {
+model Diary {
   content    String   @db.Text
   year       Int
   month      Int
@@ -37,8 +37,8 @@ model diary {
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([year, month, date, user_id])
-  @@index([emotion_id], map: "emotion_id")
-  @@index([user_id], map: "user_id")
+  @@index([emotion_id])
+  @@index([user_id])
 }
 
 model todo {
