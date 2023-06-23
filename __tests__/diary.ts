@@ -33,28 +33,18 @@ test("create diary", async () => {
 });
 
 test("get diary", async () => {
-  const [id, pw] = genIdPw();
-  const cookie = await getLoginCookies(id, pw, app);
-  const user = await db.user.findOne({
-    where: { username: id },
-  });
-  const user_id = user?.dataValues?.id!;
+  const [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  const user_id = getUserIDfromCookie(cookie)!;
   const [year, month, date] = today();
   const content = genString();
   // TODO: emotion, image 추가 테스트 필요
-  const diaries = await db.diary.upsert({
-    year,
-    month,
-    date,
-    content,
-    user_id,
-  });
-  if (!diaries) throw new Error("일기 생성 실패");
-  const diary = diaries[0];
-  diary.save();
+  const data = { year, month, date, content, user_id };
+  const diary = await db.diary.create({ data });
+  if (!diary) throw new Error("일기 생성 실패");
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
   const result = res.body as Diary;
-  expect(result?.content).toBe(diary?.dataValues.content);
+  expect(result?.content).toBe(diary?.content);
 });
