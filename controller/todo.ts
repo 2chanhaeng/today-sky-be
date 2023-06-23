@@ -148,21 +148,15 @@ async function put(req: Request, res: Response) {
 async function patch(req: Request, res: Response) {
   try {
     const user_id = await isLogin(req, res);
-    if (!user_id) return res.redirect("/login");
+    if (!user_id) throw new Unauthorized("Not Login");
     const { id } = req.params;
-    const { checked } = req.body;
-    const result = await db.todo.update(
-      { checked },
-      { where: { id, user_id } }
-    );
-    if (!result) {
-      return res
-        .status(404)
-        .json({ message: "Todo가 존재하지 않음.", result: false });
-    }
-    res.status(200).json({ result: true });
+    const data = req.body;
+    const where = { hasTodo: { id, user_id } }; // user의 todo 소유권 확인
+    const result = await db.todo.update({ data, where });
+    if (!result) throw new NotFound({ todo_id: id });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", result: false });
+    sendOrLogErrorMessage(res, error);
   }
 }
 
