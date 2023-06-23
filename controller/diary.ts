@@ -65,16 +65,24 @@ async function get(req: Request, res: Response) {
     // 로그인 여부 확인
     const user_id = await isLogin(req, res);
     if (!user_id) throw new Unauthorized("Not Login");
+    // 요청 url에서 year, month, date 추출
     const [year, month, date] = getDateFromUrl(req);
     if (!validateDate(year, month, date) || isFuture(year, month, date)) {
-      return res.status(400).json({ error: "Invalid date" }).end();
+      throw new BadRequest("Invalid date");
     }
+    // 일기의 id 값 (user_id, year, month, date)
     const id = { user_id, year, month, date };
+    // 일기를 가져옴
     const diary = await db.diary.findUnique({ where: { id } });
     if (!diary) throw new NotFound(id);
+    // 일기에 이미지가 있으면 이미지 링크를 가져옴
     const image = getImageNameIfHave(year, month, date, user_id) || "";
+    // 일기를 json으로 응답
     const { content, emotion_id } = diary;
-    res.json({ content, emotion_id, image });
+    // 감정이 있으면 감정 이미지 링크를 가져옴
+    const feel = emotion_id ? `/public/images/feel/${emotion_id}.png` : "";
+    // 일기를 json으로 응답
+    res.status(200).json({ content, feel, image });
   } catch (error) {
     sendOrLogErrorMessage(res, error);
   }
