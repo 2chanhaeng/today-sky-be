@@ -12,11 +12,11 @@ model User {
   username String  @unique @db.VarChar(255)
   password String  @db.VarChar(255)
   refresh  String? @db.VarChar(255)
-  todo     todo[]
   // TODO:
   // salt     String  @db.VarChar(255)
   // email    String  @unique @db.VarChar(255)
   diary    Diary[]
+  todo     Todo[]
 }
 
 model Emotion {
@@ -41,8 +41,8 @@ model Diary {
   @@index([user_id])
 }
 
-model todo {
-  id      Int       @id @default(autoincrement())
+model Todo {
+  id      String    @id @default(uuid())
   content String    @db.Text
   year    Int
   month   Int
@@ -52,15 +52,15 @@ model todo {
   comment comment[]
   user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  @@index([user_id], map: "user_id")
+  @@index([year, month, date, user_id])
 }
 
 model comment {
   id         Int      @id @default(autoincrement())
   content    String   @db.Text
-  todo_id    Int
+  todo_id    String
   emotion_id Int?
-  todo       todo     @relation(fields: [todo_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "comment_ibfk_1")
+  todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([emotion_id], map: "emotion_id")
