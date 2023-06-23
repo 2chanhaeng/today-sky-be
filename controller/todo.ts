@@ -18,7 +18,7 @@ export default {
   put,
   patch,
   destroy,
-  destroyAll,
+  destroys,
 };
 
 // 투두 생성
@@ -176,7 +176,7 @@ async function destroy(req: Request, res: Response) {
 }
 
 // 투두 전체 삭제
-async function destroyAll(req: Request, res: Response) {
+async function destroys(req: Request, res: Response) {
   try {
     const user_id = await isLogin(req, res);
     if (!user_id) throw new Unauthorized("Not Login");
