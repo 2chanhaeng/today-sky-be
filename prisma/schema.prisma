@@ -7,13 +7,16 @@ datasource db {
   url      = "mysql://u1:1@localhost/TodaySky"
 }
 
-model user {
-  id       Int     @id @default(autoincrement())
-  username String  @unique(map: "username") @db.VarChar(255)
+model User {
+  id       String  @id @default(uuid())
+  username String  @unique @db.VarChar(255)
   password String  @db.VarChar(255)
   refresh  String? @db.VarChar(255)
   diary    diary[]
   todo     todo[]
+  // TODO:
+  // salt     String  @db.VarChar(255)
+  // email    String  @unique @db.VarChar(255)
 }
 
 model emotion {
@@ -29,9 +32,9 @@ model diary {
   month      Int
   date       Int
   emotion_id Int?
-  user_id    Int
   emotion    emotion? @relation(fields: [emotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "diary_ibfk_1")
-  user       user     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "diary_ibfk_2")
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([year, month, date, user_id])
   @@index([emotion_id], map: "emotion_id")
@@ -44,10 +47,10 @@ model todo {
   year    Int
   month   Int
   date    Int
-  user_id Int
+  user_id String
   checked Boolean   @default(false)
   comment comment[]
-  user    user      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "todo_ibfk_1")
+  user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([user_id], map: "user_id")
 }
