@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
-import db from "@/models";
-import { isLogin } from "@/utils";
+import { PrismaClient } from "@prisma/client";
+import { isLogin, sendOrLogErrorMessage } from "@/utils";
+import { BadRequest, Unauthorized } from "@/types/error";
+
+const db = new PrismaClient();
 
 export default {
   post,
@@ -11,33 +14,26 @@ export default {
 // comment생성
 async function post(req: Request, res: Response) {
   try {
+    // 로그인 확인
     const user_id = await isLogin(req, res);
-    if (!user_id) return res.redirect("/login");
-    const todo_id = Number(req.params.todo_id);
-    // 유저ID와 투두ID로 조회: 실제 존재하는 투두인지, 해당 유저가 권한(소유)이 있는지
-    const todo = await db.todo.findOne({
-      where: { id: todo_id, user_id },
-    });
-    if (!todo) {
-      return res
-        .status(404)
-        .json({ message: "Todo가 존재하지 않음.", result: false });
-    }
+    if (!user_id) throw new Unauthorized("Not Login");
+    // 투두ID 추출
+    const { todo_id } = req.params;
+    // 실제 존재하며 해당 유저가 권한(소유)이 있는 투두인지
+    const hasTodo = { id: todo_id, user_id };
+    const todo = await db.todo.findUnique({ where: { hasTodo } });
+    if (!todo) throw new BadRequest("Todo does not exist");
     const { content, emotion_id } = req.body as {
       content: string;
       emotion_id?: number;
     };
-    const toCreate = emotion_id
-      ? { todo_id, content, emotion_id }
-      : { todo_id, content };
-    const comment = await db.comment.create(toCreate);
-    if (comment.toJSON().content !== content) {
-      return res.status(500).json({ message: "Comment 생성 실패." });
-    }
-    res.status(200).json({ comment, result: true });
+    const where = { todo_id };
+      const update = { content, emotion_id };
+      const create = { ...update, todo_id };
+      await db.comment.upsert({ where, update, create });
+    res.status(200).json(true);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal server error" });
+    sendOrLogErrorMessage(res, error);
   }
 }
 
@@ -97,8 +93,5 @@ async function destroy(req: Request, res: Response) {
         .status(500)
         .json({ message: "Comment 삭제 실패.", result: false });
     }
-    res.status(200).json({ message: "Comment 삭제 완료.", result: true });
   } catch (error) {
     res.status(500).json({ message: "Internal server error", result: false });
-  }
-}
