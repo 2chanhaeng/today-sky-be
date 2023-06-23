@@ -1,4 +1,10 @@
-import { signup, login, genIdPw, genPort } from "@/utils/testutil";
+import {
+  signup,
+  login,
+  genIdPw,
+  genPort,
+  getLoginCookies,
+} from "@/utils/testutil";
 import { PrismaClient } from "@prisma/client";
 import setPort from "@/testapp";
 import jwt from "jsonwebtoken";
@@ -34,11 +40,19 @@ test("signup errors", async () => {
   res = await signup(username, password, app);
   expect(res.status).toEqual(400);
   expect(res.body.message).toContain("Invalid username or password");
-  let user = await db.user.findFirstOrThrow();
-  res = await signup(user.username, user.password, app);
+  [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  res = await signup(username, password, app);
   expect(res.status).toEqual(400);
   expect(res.body.message).toContain("Already used username");
-  expect(res.body.message).toContain(user.username);
+  expect(res.body.message).toContain(username);
+  [username, password] = genIdPw();
+  res = await request(app)
+    .post("/signup")
+    .send({ username, password })
+    .set("Cookie", cookie);
+  expect(res.status).toEqual(400);
+  expect(res.body.message).toContain("Already logged in");
 });
 
 test("login", async () => {
