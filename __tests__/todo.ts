@@ -37,24 +37,23 @@ test("get todo", async () => {
   const cookie = await getLoginCookies(username, password, app);
   const user_id = getUserIDfromCookie(cookie)!;
   const [year, month, date] = today();
-  const content = genString();
-  const dbTodo = await db.todo.create({
-    year,
-    month,
-    date,
-    user_id,
-    content,
-  });
-  if (!dbTodo) return;
+  const dbTodos = await Promise.all(
+    Array.from({ length: 10 })
+      .map(genString)
+      .map((content) => ({ user_id, year, month, date, content }))
+      .map(async (data) => await db.todo.create({ data }))
+  );
+  if (!dbTodos) return;
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
-  const todos = res.body.todos as Todo[];
-  const { id } = dbTodo.dataValues;
-  const todo = todos.find((todo) => todo.id === dbTodo.dataValues.id);
-  expect(todo).toBeTruthy();
-  expect(todo?.id).toBe(id);
-  expect(todo?.content).toBe(content);
+  const todos = res.body as Todo[];
+  expect(todos.length).toBe(dbTodos.length);
+  todos.forEach(({ id, content }) => {
+    const dbTodo = dbTodos.find((todo) => todo.id === id);
+    expect(dbTodo).toBeTruthy();
+    expect(dbTodo?.content).toBe(content);
+  });
 });
 
 test("update todo", async () => {
