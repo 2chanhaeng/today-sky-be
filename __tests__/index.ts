@@ -1,28 +1,18 @@
 import { signup, login, genIdPw, genPort } from "@/utils/testutil";
-import db from "@/models";
-import { User } from "@/types/models";
+import { PrismaClient } from "@prisma/client";
 import setPort from "@/testapp";
 import jwt from "jsonwebtoken";
 import config from "@/config/token";
 
 const app = setPort(genPort());
+const db = new PrismaClient();
 
 test("signup", async () => {
-  const [id, pw] = genIdPw();
-  const res = await signup(id, pw, app);
-  expect(res.body).toEqual({ result: true });
-  const result = await db.user.findOne({
-    where: {
-      username: id,
-    },
-  });
-  const user = result?.toJSON<User>();
-  expect(user?.password).toBe(pw);
-  db.user.destroy({
-    where: {
-      username: id,
-    },
-  });
+  const [username, password] = genIdPw();
+  const res = await signup(username, password, app);
+  expect(res.status).toEqual(200);
+  const user = await db.user.findUnique({ where: { username } });
+  expect(user?.password).toBe(password);
 });
 
 test("login", async () => {
