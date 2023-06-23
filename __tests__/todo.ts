@@ -1,5 +1,6 @@
 import request from "supertest";
-import { today, getFromDB } from "@/utils";
+import { PrismaClient } from "@prisma/client";
+import { today } from "@/utils";
 import {
   getLoginCookies,
   genIdPw,
@@ -7,12 +8,13 @@ import {
   genString,
   getUserIDfromCookie,
 } from "@/utils/testutil";
-import db from "@/models";
 import { Todo } from "@/types/models";
 import setPort from "@/testapp";
 
 const app = setPort(genPort());
-const url = (...paths: number[]) => "/todo/" + paths.map(String).join("/");
+const db = new PrismaClient();
+const url = (...paths: (number | string)[]) =>
+  "/todo/" + paths.map(String).join("/");
 
 test("create todo", async () => {
   const [username, password] = genIdPw();
@@ -25,9 +27,9 @@ test("create todo", async () => {
     .send({ content });
   const resTodo = res.body as Todo;
   expect(resTodo?.content).toBe(content);
-  const user_id = getUserIDfromCookie(cookie)!;
-  const dbTodo = await db.todo.findOne({ where: { user_id } });
-  expect(dbTodo?.dataValues.id).toBe(resTodo?.id);
+  const { id } = resTodo;
+  const dbTodo = await db.todo.findUnique({ where: { id } });
+  expect(dbTodo?.content).toBe(content);
 });
 
 test("get todo", async () => {
