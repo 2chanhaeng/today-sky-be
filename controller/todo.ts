@@ -55,28 +55,26 @@ async function get(req: Request, res: Response) {
       throw new BadRequest("Invalid date");
     }
     // DB에서 해당 날짜의 투두 조회
+    const where = { year, month, date, user_id };
+    const select = {
+      id: true,
+      checked: true,
+      content: true,
+      comment: { select: { content: true, emotion: true } },
+    };
     const todos = await db.todo.findMany({
-      where: { year, month, date, user_id },
-      orderBy: { date: "asc", id: "asc" },
+      where,
+      select,
+      orderBy: { id: "asc" },
     });
     // 필요한 데이터를 합쳐 객체화
-    const todosByDate = await Promise.all(
-      todos.map(async ({ id, checked, content, date }) => {
-        // 해당 투두의 코멘트 조회
-        const commentr = await db.comment.findUnique({
-          where: { todo_id: id },
-        });
-        const comment = commentr?.content;
-        // 해당 투두의 감정 조회
-        const emotion_id = commentr?.emotion_id;
-        if (!emotion_id) return { date, id, content, checked, comment };
-        const emotion = await db.emotion.findUnique({
-          where: { id: emotion_id },
-        });
-        const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
-        return { id, content, checked, comment, feel };
-      })
-    );
+    const todosByDate = todos.map(({ comment: [comment], ...todo }) => {
+      if (!comment) return todo;
+      const { content, emotion } = comment;
+      // emotion이 있는 경우 feel(감정 이미지 경로)를 추가
+      const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
+      return { ...todo, feel, comment: content };
+    });
     res.status(200).json(todosByDate);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
@@ -95,31 +93,33 @@ async function gets(req: Request, res: Response) {
       return res.redirect("/todo");
     }
     // DB에서 해당 월의 투두 조회
-    const todos = await db.todo.findMany({ where: { year, month, user_id } });
+    const where = { year, month, user_id };
+    const select = {
+      id: true,
+      checked: true,
+      content: true,
+      date: true,
+      comment: { select: { content: true, emotion: true } },
+    };
+    const todos = await db.todo.findMany({
+      where,
+      select,
+      orderBy: { id: "asc" },
+    });
     // 필요한 데이터를 합쳐 객체화
-    const todosByDate = await todos
-      .map(async ({ id, checked, content, date }) => {
-        // 해당 투두의 코멘트 조회
-        const commentr = await db.comment.findUnique({
-          where: { todo_id: id },
-        });
-        const comment = commentr?.content;
-        // 해당 투두의 감정 조회
-        const emotion_id = commentr?.emotion_id;
-        if (!emotion_id) return { date, id, content, checked, comment };
-        const emotion = await db.emotion.findUnique({
-          where: { id: emotion_id },
-        });
+    const todosByDate = todos
+      .map(({ comment: [comment], ...todo }) => {
+        const { content, emotion } = comment;
+        // emotion이 있는 경우 feel(감정 이미지 경로)를 추가
         const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
-        return { date, id, content, checked, comment, feel };
+        return { ...todo, feel, comment: content };
       })
-      .reduce(async (pracc, todo) => {
-        const { date, ...curr } = await todo;
-        const acc = await pracc;
-        if (!acc[date]) acc[date] = [];
-        acc[date].push(curr);
+      .reduce((acc, todo) => {
+        const { date, ...curr } = todo;
+        if (date in acc) acc[date].push(curr);
+        else acc[date] = [curr];
         return acc;
-      }, Promise.resolve({} as { [date: number]: TodoResponse[] }));
+      }, {} as { [date: number]: TodoResponse[] });
     res.status(200).json(todosByDate);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
