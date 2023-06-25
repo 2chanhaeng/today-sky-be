@@ -21,11 +21,11 @@ async function post(req: Request, res: Response) {
     const todo = await db.todo.findUnique({ where: { hasTodo } });
     if (!todo) throw new BadRequest("Todo does not exist");
     // 요청에서 코멘트 내용 추출
-    const update = req.body as Prisma.CommentUpdateInput;
+    const update = req.body as Prisma.CommentUncheckedCreateWithoutTodoInput;
     const where = { todo_id };
     if (update.content) {
       // 코멘트 내용이 있으면 생성 또는 업데이트
-      const create = { ...update, todo_id } as Prisma.CommentCreateInput;
+      const create: Prisma.CommentUncheckedCreateInput = { ...update, todo_id };
       await db.comment.upsert({ where, update, create });
     } else {
       // 코멘트 내용이 없으면 삭제

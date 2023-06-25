@@ -21,8 +21,7 @@ model User {
 }
 
 model Emotion {
-  id      Int       @id @default(autoincrement())
-  feel    String    @db.VarChar(255)
+  id      String    @id @db.VarChar(15)
   comment Comment[]
   diary   Diary[]
 }
@@ -32,7 +31,7 @@ model Diary {
   year       Int
   month      Int
   date       Int
-  emotion_id Int?
+  emotion_id String?
   user_id    String
   emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -62,7 +61,7 @@ model Todo {
 model Comment {
   content    String   @db.Text
   todo_id    String   @id
-  emotion_id Int?
+  emotion_id String?
   todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
