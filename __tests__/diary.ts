@@ -66,3 +66,22 @@ test("get diary", async () => {
     .set("Cookie", cookie);
   expect(res.body?.content).toBe(content);
 });
+
+test("get diary with emotion", async () => {
+  const [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  const user_id = getUserIDfromCookie(cookie)!;
+  const [year, month, date] = today();
+  const content = genString();
+  // TODO: image 추가 테스트 필요
+  const emotion_id = genEmoji();
+  const data = { year, month, date, content, user_id, emotion_id };
+  const diary = await db.diary.create({ data });
+  if (!diary) throw new Error("일기 생성 실패");
+  const res = await request(app)
+    .get(url(year, month, date))
+    .set("Cookie", cookie);
+  const result = res.body;
+  expect(result?.content).toBe(diary?.content);
+  expect(result?.emotion_id).toBe(emotion_id);
+});
