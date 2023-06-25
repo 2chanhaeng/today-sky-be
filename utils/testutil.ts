@@ -50,3 +50,8 @@ export function genString() {
 export function genPort() {
   return Math.floor(Math.random() * 10000) + 8000;
 }
+
+export function genEmoji() {
+  const emojis = 80;
+  return String.fromCodePoint(128512 + Math.floor(Math.random() * emojis));
+}
