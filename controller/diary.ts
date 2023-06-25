@@ -99,11 +99,14 @@ async function post(req: Request, res: Response) {
       throw new BadRequest("Invalid date");
     }
     // 요청 body에서 emotion, content 추출
-    const { emotion, content } = req.body;
+    const { emotion_id, content } =
+      req.body as Prisma.DiaryUncheckedCreateInput;
     // content가 없으면 400 응답
     if (!content) throw new BadRequest("Content is required");
-    // emotion이 있으면 emotion_id를 number로 변환
-    const emotion_id = emotion ? Number(emotion) : undefined;
+    // emotion_id가 있으면 emotion을 생성
+    const emotion = emotion_id
+      ? { emotion: { create: { id: emotion_id } } }
+      : {};
     // 일기의 id 값 (user_id, year, month, date)
     const id = { user_id, year, month, date };
     // 일기를 생성하거나 수정
@@ -115,7 +118,7 @@ async function post(req: Request, res: Response) {
     // 일기 생성에 실패하면 500 응답
     if (!diary) throw new InternalServerError("Diary is not created");
     // 일기 생성에 성공하면 201 응답
-    res.status(201).json(diary);
+    res.status(201).json(true);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
   }
