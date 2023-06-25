@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export interface User {
   id: number;
   username: string;
@@ -39,13 +41,12 @@ export interface Image {
   comment_id: number;
 }
 
-export interface TodoResponse {
+export type TodoResponse = {
   id: string;
   content: string;
-  checked?: boolean;
-  comment?: string;
-  feel?: string;
-}
+  checked: boolean;
+  comment?: Comment | null;
+}[];
 
 export type DiaryResponse = Prisma.DiaryGetPayload<{
   select: {
