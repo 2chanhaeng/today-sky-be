@@ -110,11 +110,10 @@ async function post(req: Request, res: Response) {
     // 일기의 id 값 (user_id, year, month, date)
     const id = { user_id, year, month, date };
     // 일기를 생성하거나 수정
-    const diary = await db.diary.upsert({
-      create: { user_id, year, month, date, content, emotion_id },
-      where: { id },
-      update: { content, emotion_id },
-    });
+    const where = { id };
+    const update = { content, ...emotion };
+    const create = { ...id, content, emotion_id };
+    const diary = await db.diary.upsert({ where, update, create });
     // 일기 생성에 실패하면 500 응답
     if (!diary) throw new InternalServerError("Diary is not created");
     // 일기 생성에 성공하면 201 응답
