@@ -73,14 +73,11 @@ async function get(req: Request, res: Response) {
     // 일기를 가져옴
     const diary = await db.diary.findUnique({ where: { id } });
     if (!diary) throw new NotFound(id);
+    const { content, emotion_id } = diary;
     // 일기에 이미지가 있으면 이미지 링크를 가져옴
     const image = getImageNameIfHave(year, month, date, user_id) || "";
     // 일기를 json으로 응답
-    const { content, emotion_id } = diary;
-    // 감정이 있으면 감정 이미지 링크를 가져옴
-    const feel = emotion_id ? `/public/images/feel/${emotion_id}.png` : "";
-    // 일기를 json으로 응답
-    res.status(200).json({ content, feel, image });
+    res.status(200).json({ content, image, emotion_id });
   } catch (error) {
     sendOrLogErrorMessage(res, error);
   }
