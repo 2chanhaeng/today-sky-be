@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  relationMode = "prisma"
+  url          = env("DATABASE_URL")
+}
+
+model User {
+  id       String  @id @default(uuid())
+  username String  @unique @db.VarChar(255)
+  password String  @db.VarChar(255)
+  refresh  String? @db.VarChar(255)
+  salt     String  @db.VarChar(255)
+  // TODO:
+  // email    String  @unique @db.VarChar(255)
+  diary    Diary[]
+  todo     Todo[]
+}
+
+model Emotion {
+  id      String    @id @db.VarChar(15)
+  comment Comment[]
+  diary   Diary[]
+}
+
+model Diary {
+  content    String   @db.Text
+  year       Int
+  month      Int
+  date       Int
+  emotion_id String?
+  user_id    String
+  emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([year, month, date, user_id], name: "id")
+  @@index([emotion_id])
+  @@index([user_id])
+}
+
+model Todo {
+  id      String    @id @default(uuid())
+  content String    @db.Text
+  year    Int
+  month   Int
+  date    Int
+  user_id String
+  checked Boolean   @default(false)
+  comment Comment[]
+  user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([id, user_id], name: "hasTodo")
+  @@index([year, month, date, user_id], map: "todosOnDate")
+  @@index([year, month, user_id], map: "todosOnMonth")
+  @@index([user_id])
+}
+
+model Comment {
+  content    String   @db.Text
+  todo_id    String   @id
+  emotion_id String?
+  todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  emotion    Emotion? @relation(fields: [emotion_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([emotion_id])
+  @@index([todo_id])
+}

@@ -1,5 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
+declare module "jsonwebtoken" {
+  interface JwtPayload {
+    id: string;
+  }
+}
+
 export interface Controller {
   [key: string]: Control;
 }

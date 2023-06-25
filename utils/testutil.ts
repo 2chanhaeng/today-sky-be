@@ -1,6 +1,7 @@
 import { Express } from "express";
 import request from "supertest";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import token from "@/config/token";
 
 const ACCESS_TOKEN = token.ACCESS_TOKEN;
@@ -34,21 +35,23 @@ export function getUserIDfromCookie(cookies: string[]) {
     ?.split(";")[0]
     .split("=")[1];
   if (!access) return;
-  const { id } = jwt.verify(access, ACCESS_TOKEN) as { id: number };
+  const { id } = jwt.verify(access, ACCESS_TOKEN) as jwt.JwtPayload;
   return id;
 }
 
 export function genIdPw() {
-  return [
-    Math.random().toString(36).substring(2, 8),
-    Math.random().toString(36).substring(2, 8),
-  ];
+  return [genString(), genString()];
 }
 
 export function genString() {
-  return Math.random().toString(36);
+  return crypto.randomBytes(20).toString("hex");
 }
 
 export function genPort() {
   return Math.floor(Math.random() * 10000) + 8000;
+}
+
+export function genEmoji() {
+  const emojis = 80;
+  return String.fromCodePoint(128512 + Math.floor(Math.random() * emojis));
 }

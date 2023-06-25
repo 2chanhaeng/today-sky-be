@@ -1,5 +1,6 @@
 import request from "supertest";
-import { today, getFromDB } from "@/utils";
+import db from "@/db";
+import { today } from "@/utils";
 import {
   getLoginCookies,
   genIdPw,
@@ -7,12 +8,12 @@ import {
   genString,
   getUserIDfromCookie,
 } from "@/utils/testutil";
-import db from "@/models";
 import { Todo } from "@/types/models";
 import setPort from "@/testapp";
 
 const app = setPort(genPort());
-const url = (...paths: number[]) => "/todo/" + paths.map(String).join("/");
+const url = (...paths: (number | string)[]) =>
+  "/todo/" + paths.map(String).join("/");
 
 test("create todo", async () => {
   const [username, password] = genIdPw();
@@ -24,10 +25,9 @@ test("create todo", async () => {
     .set("Cookie", cookie)
     .send({ content });
   const resTodo = res.body as Todo;
-  expect(resTodo?.content).toBe(content);
-  const user_id = getUserIDfromCookie(cookie)!;
-  const dbTodo = await db.todo.findOne({ where: { user_id } });
-  expect(dbTodo?.dataValues.id).toBe(resTodo?.id);
+  const { id } = resTodo;
+  const dbTodo = await db.todo.findUnique({ where: { id } });
+  expect(dbTodo?.content).toBe(content);
 });
 
 test("get todo", async () => {
@@ -35,24 +35,23 @@ test("get todo", async () => {
   const cookie = await getLoginCookies(username, password, app);
   const user_id = getUserIDfromCookie(cookie)!;
   const [year, month, date] = today();
-  const content = genString();
-  const dbTodo = await db.todo.create({
-    year,
-    month,
-    date,
-    user_id,
-    content,
-  });
-  if (!dbTodo) return;
+  const dbTodos = await Promise.all(
+    Array.from({ length: 10 })
+      .map(genString)
+      .map((content) => ({ user_id, year, month, date, content }))
+      .map(async (data) => await db.todo.create({ data }))
+  );
+  if (!dbTodos) return;
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
-  const todos = res.body.todos as Todo[];
-  const { id } = dbTodo.dataValues;
-  const todo = todos.find((todo) => todo.id === dbTodo.dataValues.id);
-  expect(todo).toBeTruthy();
-  expect(todo?.id).toBe(id);
-  expect(todo?.content).toBe(content);
+  const todos = res.body as Todo[];
+  expect(todos.length).toBe(dbTodos.length);
+  todos.forEach(({ id, content }) => {
+    const dbTodo = dbTodos.find((todo) => todo.id === id);
+    expect(dbTodo).toBeTruthy();
+    expect(dbTodo?.content).toBe(content);
+  });
 });
 
 test("update todo", async () => {
@@ -62,26 +61,20 @@ test("update todo", async () => {
   if (!user_id) return;
   const [year, month, date] = today();
   const old = genString();
-  const oldTodo = await db.todo.create({
-    user_id,
-    year,
-    month,
-    date,
-    content: old,
-  });
-  const id = oldTodo?.dataValues.id;
+  const data = { user_id, year, month, date, content: old };
+  const { id } = await db.todo.create({ data });
   const patchRes = await request(app)
     .patch(url(id))
     .set("Cookie", cookie)
     .send({ checked: true });
-  expect(patchRes.body?.result).toBe(true);
+  expect(patchRes.body).toBe(true);
   const content = genString();
   const putRes = await request(app)
     .put(url(id))
     .set("Cookie", cookie)
     .send({ content });
-  expect(putRes.body?.result).toBe(true);
-  const newTodo = await getFromDB(db.todo, {
+  expect(putRes.body).toBe(true);
+  const newTodo = await db.todo.findUnique({
     where: { id },
   });
   expect(newTodo?.id).toBe(id);
@@ -96,28 +89,25 @@ test("delete todo", async () => {
   if (!user_id) return;
   const [year, month, date] = today();
   const content = genString();
-  const dbTodo = await db.todo.create({ user_id, year, month, date, content });
-  const id = dbTodo?.dataValues.id;
+  const data = { user_id, year, month, date, content };
+  const { id } = await db.todo.create({ data });
   const res = await request(app).delete(url(id)).set("Cookie", cookie);
-  expect(res.body.result).toBe(true);
-  const deleted = await db.todo.findOne({
+  expect(res.body).toBe(true);
+  const deleted = await db.todo.findUnique({
     where: { id },
   });
   expect(deleted).toBeNull();
   await Promise.all(
     Array.from({ length: 10 })
       .map(genString)
-      .map(
-        async (content) =>
-          await db.todo.create({ user_id, year, month, date, content })
-      )
+      .map((content) => ({ user_id, year, month, date, content }))
+      .map(async (data) => await db.todo.create({ data }))
   );
-  const deleteAllRes = await request(app)
+  const deletesRes = await request(app)
     .delete(url(year, month, date))
     .set("Cookie", cookie);
-  expect(deleteAllRes.body.result).toBe(true);
-  const deletedAll = await db.todo.findAll({
-    where: { year, month, date, user_id },
-  });
-  expect(deletedAll.length).toBe(0);
+  expect(deletesRes.body).toBe(true);
+  const where = { year, month, date, user_id };
+  const deleteds = await db.todo.findMany({ where });
+  expect(deleteds.length).toBe(0);
 });

@@ -11,7 +11,7 @@ route.use("/comment", comment);
 route.post("/:year/:month/:date", todo.post);
 route.get("/:year/:month/:date", todo.get);
 route.get("/:year/:month/", todo.gets);
-route.delete("/:year/:month/:date", todo.destroyAll);
+route.delete("/:year/:month/:date", todo.destroys);
 route.put("/:id", todo.put);
 route.patch("/:id", todo.patch);
 route.delete("/:id", todo.destroy);
