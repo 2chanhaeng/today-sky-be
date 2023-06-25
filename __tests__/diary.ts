@@ -4,6 +4,7 @@ import {
   genPort,
   genString,
   getUserIDfromCookie,
+  genEmoji,
 } from "@/utils/testutil";
 import { today } from "@/utils";
 import db from "@/db";
@@ -29,6 +30,25 @@ test("create diary", async () => {
   const select = { content: true, emotion_id: true };
   const dbDiary = await db.diary.findUnique({ where, select });
   expect(dbDiary?.content).toBe(content);
+});
+
+test("create diary with emotion", async () => {
+  const [username, password] = genIdPw();
+  const cookie = await getLoginCookies(username, password, app);
+  const user_id = getUserIDfromCookie(cookie)!;
+  const [year, month, date] = today();
+  const content = genString();
+  const emotion_id = genEmoji();
+  const res = await request(app)
+    .post(url(year, month, date))
+    .set("Cookie", cookie)
+    .send({ content, emotion_id });
+  expect(res.body).toBe(true);
+  const where = { id: { user_id, year, month, date } };
+  const select = { content: true, emotion_id: true };
+  const dbDiary = await db.diary.findUnique({ where, select });
+  expect(dbDiary?.content).toBe(content);
+  expect(dbDiary?.emotion_id).toBe(emotion_id);
 });
 
 test("get diary", async () => {
