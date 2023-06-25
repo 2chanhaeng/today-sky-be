@@ -58,7 +58,7 @@ async function get(req: Request, res: Response) {
       id: true,
       checked: true,
       content: true,
-      comment: { select: { content: true, emotion: true } },
+      comment: { select: { content: true, emotion_id: true } },
     };
     const todos = await db.todo.findMany({
       where,
@@ -66,13 +66,8 @@ async function get(req: Request, res: Response) {
       orderBy: { id: "asc" },
     });
     // 필요한 데이터를 합쳐 객체화
-    const todosByDate = todos.map(({ comment: [comment], ...todo }) => {
-      if (!comment) return todo;
-      const { content, emotion } = comment;
-      // emotion이 있는 경우 feel(감정 이미지 경로)를 추가
-      const feel = emotion ? `/public/images/feel/${emotion.feel}.png` : "";
-      return { ...todo, feel, comment: content };
-    });
+    const todosByDate = todos
+      .map(({ comment: [comment], ...todo }) => ({ ...todo, comment }));
     res.status(200).json(todosByDate);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
