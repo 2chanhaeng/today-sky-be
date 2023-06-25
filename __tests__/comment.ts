@@ -34,6 +34,28 @@ test("create comment", async () => {
   expect(dbComment?.emotion_id).toBe(emotion_id);
 });
 
+test("get commented todo", async () => {
+  // 투두를 생성하고 투두 아이디와 쿠키를 추출
+  const { cookie, todo_id } = await createTodoAndCookie();
+  // 임의의 코멘트 내용을 생성
+  const content = genString();
+  const emotion_id = genEmoji();
+  // 코멘트 생성
+  const where = { id: todo_id };
+  const data = { comment: { create: { content, emotion_id } } };
+  const include = { comment: true };
+  const dbTodo = await db.todo.update({ where, data, include });
+  const { year, month, date } = dbTodo;
+  // API로 TODO 조회
+  const res = await request(app)
+    .get(`/todo/${year}/${month}/${date}`)
+    .set("Cookie", cookie);
+  // 응답에서 코멘트 추출해서 결과 확인
+  const { comment } = res.body[0];
+  expect(comment?.content).toBe(content);
+  expect(comment?.emotion_id).toBe(emotion_id);
+});
+
 test("update comment", async () => {
   // 투두를 생성하고 투두 아이디와 쿠키를 추출
   const { cookie, todo_id } = await createTodoAndCookie();
