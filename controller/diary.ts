@@ -102,7 +102,10 @@ async function post(req: Request, res: Response) {
     const { emotion_id, content } =
       req.body as Prisma.DiaryUncheckedCreateInput;
     // content가 없으면 400 응답
-    if (!content) throw new BadRequest("Content is required");
+    if (!content) {
+      // TODO: 콘텐츠 없으면 일기 삭제
+      throw new BadRequest("Content is required");
+    }
     // emotion_id가 있으면 emotion을 생성
     const emotion = emotion_id
       ? { emotion: { create: { id: emotion_id } } }
