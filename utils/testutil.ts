@@ -40,10 +40,7 @@ export function getUserIDfromCookie(cookies: string[]) {
 }
 
 export function genIdPw() {
-  return [
-    Math.random().toString(36).substring(2, 8),
-    Math.random().toString(36).substring(2, 8),
-  ];
+  return [genString(), genString()];
 }
 
 export function genString() {
