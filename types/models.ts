@@ -48,6 +48,10 @@ export type TodoResponse = {
   comment?: Comment | null;
 }[];
 
+export interface TodosResponse {
+  [date: number]: TodoResponse;
+}
+
 export type DiaryResponse = Prisma.DiaryGetPayload<{
   select: {
     content: true;
