@@ -71,7 +71,9 @@ async function get(req: Request, res: Response) {
     // 일기의 id 값 (user_id, year, month, date)
     const id = { user_id, year, month, date };
     // 일기를 가져옴
-    const diary = await db.diary.findUnique({ where: { id } });
+    const where = { id };
+    const select = { content: true, emotion_id: true };
+    const diary = await db.diary.findUnique({ where, select });
     if (!diary) throw new NotFound(id);
     const { content, emotion_id } = diary;
     // 일기에 이미지가 있으면 이미지 링크를 가져옴
