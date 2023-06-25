@@ -1,6 +1,7 @@
 import { Express } from "express";
 import request from "supertest";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import token from "@/config/token";
 
 const ACCESS_TOKEN = token.ACCESS_TOKEN;
@@ -46,7 +47,7 @@ export function genIdPw() {
 }
 
 export function genString() {
-  return Math.random().toString(36);
+  return crypto.randomBytes(20).toString("hex");
 }
 
 export function genPort() {
