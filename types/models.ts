@@ -49,10 +49,15 @@ export interface TodoResponse {
   feel?: string;
 }
 
-export interface DiaryResponse {
-  content: string;
-  feel?: string;
-  image?: string;
+export type DiaryResponse = Prisma.DiaryGetPayload<{
+  select: {
+    content: true;
+    emotion_id: true;
+  };
+}>;
+
+export interface DiariesResponse {
+  [date: number]: DiaryResponse;
 }
 
 export interface CommentRequest {
