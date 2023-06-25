@@ -13,8 +13,8 @@ model User {
   username String  @unique @db.VarChar(255)
   password String  @db.VarChar(255)
   refresh  String? @db.VarChar(255)
+  salt     String  @db.VarChar(255)
   // TODO:
-  // salt     String  @db.VarChar(255)
   // email    String  @unique @db.VarChar(255)
   diary    Diary[]
   todo     Todo[]
