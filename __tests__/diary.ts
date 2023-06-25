@@ -7,7 +7,6 @@ import {
 } from "@/utils/testutil";
 import { today } from "@/utils";
 import db from "@/db";
-import { Diary } from "@/types/models";
 import setPort from "@/testapp";
 import request from "supertest";
 
@@ -25,10 +24,11 @@ test("create diary", async () => {
     .post(url(year, month, date))
     .set("Cookie", cookie)
     .send({ content });
-  const resDiary = res.body as Diary;
-  const id = { user_id, year, month, date };
-  const dbDiary = await db.diary.findUnique({ where: { id } });
-  expect(dbDiary?.content).toBe(resDiary?.content);
+  expect(res.body).toBe(true);
+  const where = { id: { user_id, year, month, date } };
+  const select = { content: true, emotion_id: true };
+  const dbDiary = await db.diary.findUnique({ where, select });
+  expect(dbDiary?.content).toBe(content);
 });
 
 test("get diary", async () => {
@@ -44,6 +44,5 @@ test("get diary", async () => {
   const res = await request(app)
     .get(url(year, month, date))
     .set("Cookie", cookie);
-  const result = res.body as Diary;
-  expect(result?.content).toBe(diary?.content);
+  expect(res.body?.content).toBe(content);
 });
