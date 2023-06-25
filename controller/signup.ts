@@ -1,6 +1,7 @@
+import crypto from "crypto";
 import { Request, Response } from "express";
-import db from "@/db";
 import { Prisma } from "@prisma/client";
+import db from "@/db";
 import isLogin from "@/utils/login";
 import {
   ConnectionError,
@@ -21,13 +22,18 @@ async function post(req: Request, res: Response) {
     // 로그인 상태라면 에러 발생
     if (user_id) throw new BadRequest("Already logged in");
     // 회원가입 요청 데이터 추출
-    const data = req.body as Prisma.UserCreateInput;
+    const { username, password: plain } = req.body as Prisma.UserCreateInput;
+    // 회원가입 요청 데이터 검증
+    // TODO: 데이터 검증 로직 추가
+    if (!username.trim() || !plain.trim())
+      // 검증 오류 시 BadRequest 에러 발생
+      throw new BadRequest("Invalid username or password");
+    const salt = crypto.randomBytes(64).toString("base64");
+    const password = crypto
+      .pbkdf2Sync(plain, salt, 100000, 64, "sha512")
+      .toString("base64");
+    const data = { username, password, salt };
     try {
-      // 회원가입 요청 데이터 검증
-      // TODO: 데이터 검증 로직 추가
-      if (!data.username.trim() || !data.password.trim())
-        // 검증 오류 시 BadRequest 에러 발생
-        throw new BadRequest("Invalid username or password");
       // DB에 회원가입 요청 데이터 저장
       const result = await db.user.create({ data });
       // DB에 저장 실패 시 BadRequest 에러 발생
