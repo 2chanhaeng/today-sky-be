@@ -30,10 +30,8 @@ export interface Emotion {
 }
 
 export interface Comment {
-  id: number;
-  todo_id: number;
   content: string;
-  emotion_id: number;
+  emotion_id?: string | null;
 }
 
 export interface Image {
