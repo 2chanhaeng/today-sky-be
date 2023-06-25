@@ -8,13 +8,14 @@ import {
   getImageNameIfHave,
   sendOrLogErrorMessage,
 } from "@/utils";
-import { DiaryResponse } from "@/types/models";
+import { DiariesResponse } from "@/types/models";
 import {
   BadRequest,
   NotFound,
   Unauthorized,
   InternalServerError,
 } from "@/types/error";
+import { Prisma } from "@prisma/client";
 
 export default {
   get,
@@ -33,9 +34,13 @@ async function gets(req: Request, res: Response) {
       throw new BadRequest("Invalid date");
     }
     // 해당 월의 일기들을 가져옴
-    const diariesResult = await db.diary.findMany({
-      where: { user_id, year, month },
-    });
+    const where = { user_id, year, month };
+    const select = {
+      date: true,
+      content: true,
+      emotion_id: true,
+    };
+    const diariesResult = await db.diary.findMany({ where, select });
     // 필요한 데이터만 추출해 객체로 만듦
     const diaries = diariesResult
       // 날짜, 내용, 감정(존재 시), 이미지(존재 시) 추출
@@ -43,14 +48,13 @@ async function gets(req: Request, res: Response) {
         // 이미지가 있으면 이미지 링크를 가져옴
         const image = getImageNameIfHave(year, month, date, user_id) || "";
         // 감정이 있으면 감정 이미지 링크를 가져옴
-        const feel = emotion_id ? `/public/images/feel/${emotion_id}.png` : "";
-        return { date, content, image, feel };
+        return { date, content, image, emotion_id };
       })
       // 날짜에 대해 해당 데이터를 갖는 객체로 변환
       .reduce((acc, { date, ...cur }) => {
         acc[date] = cur;
         return acc;
-      }, {} as { [key: number]: DiaryResponse });
+      }, {} as DiariesResponse);
     // 일기들을 json으로 응답
     res.status(200).json(diaries);
   } catch (error) {
