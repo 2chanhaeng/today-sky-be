@@ -11,8 +11,6 @@ export default {
   post,
 };
 
-const aMonth = 60 * 60 * 24 * 30;
-
 async function post(req: Request, res: Response) {
   try {
     const user_id = await isLogin(req, res);
@@ -39,13 +37,8 @@ async function post(req: Request, res: Response) {
       expiresIn: "30d",
     });
     // DB에 refresh 토큰 저장
-    await db.refresh.create({ data: { user_id: id, refresh } });
-    const accessOptions = { httpOnly: true, secure: true };
-    const refreshOptions =
-      req.body.keep == "on"
-        ? { ...accessOptions, maxAge: aMonth }
-        : accessOptions;
-    // 쿠키 생성 및 설정
+    await db.refresh.create({ data: { user_id: id, refresh, access } });
+    // 토큰 전송
     res.status(200).json({ access, refresh });
   } catch (error) {
     if (error instanceof ConnectionError) {
