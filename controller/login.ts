@@ -39,7 +39,7 @@ async function post(req: Request, res: Response) {
       expiresIn: "30d",
     });
     // DB에 refresh 토큰 저장
-    await db.user.update({ where: { id }, data: { refresh } });
+    await db.refresh.create({ data: { user_id: id, refresh } });
     const accessOptions = { httpOnly: true, secure: true };
     const refreshOptions =
       req.body.keep == "on"
