@@ -204,3 +204,7 @@ $RECYCLE.BIN/
 config/
 config/index.ts
 upload/
+
+# secure
+keys/
+*.pem
