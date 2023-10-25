@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
-import isLogin from "@/utils/login";
+import { isLogin, sendOrLogErrorMessage } from "@/utils";
 import { ConnectionError, BadRequest } from "@/types/error";
 import { createTokens, verifyUserinfo } from "@/utils/verify";
 
@@ -22,11 +22,6 @@ async function post(req: Request, res: Response) {
     // 토큰 전송
     res.status(200).json({ access, refresh });
   } catch (error) {
-    if (error instanceof ConnectionError) {
-      const { status, message } = error;
-      return res.status(status).json({ message });
-    }
-    console.log("Unknown error in POST /login:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    sendOrLogErrorMessage(res, error);
   }
 }
