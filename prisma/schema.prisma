@@ -23,12 +23,15 @@ model User {
 
 model Refresh {
   refresh String @id @db.VarChar(255)
+  access  String @unique @db.VarChar(255)
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // logged_at DateTime @default(now())
   // logged_device String @db.VarChar(255)
+  // recent DateTime @default(now()) // Delete after 30 days
 
   @@unique([user_id, refresh], name: "has_refresh")
+  @@unique([user_id, access], name: "has_access")
   @@index([user_id])
 
 }
