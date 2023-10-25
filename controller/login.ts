@@ -46,11 +46,7 @@ async function post(req: Request, res: Response) {
         ? { ...accessOptions, maxAge: aMonth }
         : accessOptions;
     // 쿠키 생성 및 설정
-    res
-      .status(200)
-      .cookie("access", access, accessOptions)
-      .cookie("refresh", refresh, refreshOptions)
-      .end();
+    res.status(200).json({ access, refresh });
   } catch (error) {
     if (error instanceof ConnectionError) {
       const { status, message } = error;
