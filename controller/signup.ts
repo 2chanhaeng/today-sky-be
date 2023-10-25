@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
 import db from "@/db";
-import isLogin from "@/utils/login";
+import { isLogin } from "@/utils/login";
 import {
   ConnectionError,
   BadRequest,

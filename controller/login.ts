@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
-import { isLogin, sendOrLogErrorMessage } from "@/utils";
-import { ConnectionError, BadRequest } from "@/types/error";
-import { createTokens, verifyUserinfo } from "@/utils/verify";
+import {
+  isLogin,
+  sendOrLogErrorMessage,
+  createTokens,
+  verifyUserinfo,
+} from "@/utils";
+import { BadRequest } from "@/types/error";
 
 export default {
   post,
