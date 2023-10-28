@@ -5,9 +5,13 @@ import db from "@/db";
 import config from "@/config/token";
 import { Unauthorized, NotFound } from "@/types/error";
 
+const cutBearer = (access: string) =>
+  access.substring(0, 7) === "Bearer " ? access.slice(7) : access;
+
 export async function isLogin(req: Request, res: Response) {
   try {
-    const access = req.headers.authorization || req.cookies.access;
+    const access = cutBearer(req.headers.authorization || req.cookies.access);
+    console.log("Access 토큰", access);
     if (!access) throw new Unauthorized("");
     // access 토큰이 존재하는 경우
     const { id } = jwt.verify(access, config.ACCESS_TOKEN) as jwt.JwtPayload;
