@@ -12,7 +12,7 @@ async function get(req: Request, res: Response) {
     const access = req.headers.authorization || req.cookies.access;
     if (!access) throw new BadRequest("Not Logged In");
     const where = { access };
-    await db.refresh.delete({ where });
+    await db.refresh.deleteMany({ where });
     res.clearCookie("access").status(200).end();
   } catch (error) {
     sendOrLogErrorMessage(res, error);
