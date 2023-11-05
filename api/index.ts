@@ -4,6 +4,8 @@ import todo from "./todo";
 import upload from "./upload";
 import signup from "./signup";
 import login from "./login";
+import refresh from "./refresh";
+import logout from "./logout";
 
 const route = Router();
 
@@ -12,5 +14,7 @@ route.use("/todo", todo);
 route.use("/upload", upload);
 route.use("/signup", signup);
 route.use("/login", login);
+route.use("/refresh", refresh);
+route.use("/logout", logout);
 
 export default route;

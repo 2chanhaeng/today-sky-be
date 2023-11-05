@@ -1,12 +1,17 @@
+import crypto from "crypto";
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import db from "@/db";
 import config from "@/config/token";
-import { Unauthorized } from "@/types/error";
+import { Unauthorized, NotFound } from "@/types/error";
 
-export default async function isLogin(req: Request, res: Response) {
+const cutBearer = (access: string) =>
+  access.substring(0, 7) === "Bearer " ? access.slice(7) : access;
+
+export async function isLogin(req: Request, res: Response) {
   try {
-    const access = req.headers.authorization || req.cookies.access;
+    const access = cutBearer(req.headers.authorization || req.cookies.access);
+    console.log("Access 토큰", access);
     if (!access) throw new Unauthorized("");
     // access 토큰이 존재하는 경우
     const { id } = jwt.verify(access, config.ACCESS_TOKEN) as jwt.JwtPayload;
@@ -27,33 +32,31 @@ export default async function isLogin(req: Request, res: Response) {
       return;
     }
   }
+}
 
-  // refresh 토큰 확인
-  const refresh = (req.headers.refresh || req.cookies.refresh) as string;
-  if (!refresh) {
-    return;
-  }
+export async function verifyUserinfo(username: string, plain: string) {
+  // 유저 정보 확인
+  const where = { username };
+  const select = { id: true, salt: true, password: true };
+  const user = await db.user.findUnique({ where, select });
+  if (!user) throw new NotFound({ username });
+  const { id, salt, password } = user;
+  const encoded = crypto
+    .pbkdf2Sync(plain, salt, 100000, 64, "sha512")
+    .toString("base64");
+  // pw가 일치하지 않아도 NotFound 에러 발생
+  // pw가 틀렸다고 하면 username의 존재를 알려주기 때문에 DB 간접적으로 노출
+  if (password !== encoded) throw new NotFound({ username });
+  return id;
+}
 
-  try {
-    // refresh 토큰이 유효한 경우 유저 ID 반환
-    const { id } = jwt.verify(refresh, config.REFRESH_TOKEN!) as jwt.JwtPayload;
-    // DB에서 유저 refresh 가져오기
-    const user = await db.user.findUnique({ where: { id } });
-    if (!user) throw new Error("유저 정보 없음");
-    if (user.refresh !== refresh) {
-      // refresh 토큰이 일치하지 않는 경우
-      throw new Error("Refresh 토큰 불일치");
-    }
-    // 새 access 토큰 발급
-    const newAccess = jwt.sign({ user: id }, config.ACCESS_TOKEN!, {
-      expiresIn: "1h",
-    });
-    req.headers.authorization = `Bearer ${newAccess}`;
-    res.cookie("access", newAccess, { httpOnly: true });
-    return id;
-  } catch (err) {
-    // 이외의 경우 로그인 페이지로 리디렉션합니다.
-    console.log("Refresh 토큰 검증 오류", err);
-    return;
-  }
+export async function createTokens(id: string) {
+  const access = jwt.sign({ id }, config.ACCESS_TOKEN!, {
+    expiresIn: "1h",
+  });
+  const refresh = jwt.sign({ id }, config.REFRESH_TOKEN!, {
+    expiresIn: "30d",
+  });
+  // DB에 refresh 토큰 저장
+  return await db.refresh.create({ data: { user_id: id, refresh, access } });
 }

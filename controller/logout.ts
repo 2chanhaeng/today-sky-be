@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import db from "@/db";
-import { isLogin, sendOrLogErrorMessage } from "@/utils";
-import { BadRequest, Unauthorized } from "@/types/error";
+import { sendOrLogErrorMessage } from "@/utils";
+import { BadRequest } from "@/types/error";
 
 export default {
   get,
@@ -9,13 +9,11 @@ export default {
 
 async function get(req: Request, res: Response) {
   try {
-    const id = await isLogin(req, res);
-    if (!id) throw new Unauthorized("Not Login");
-    const where = { id };
-    const data = { refresh: null };
-    const result = await db.user.update({ where, data });
-    if (!result) throw new BadRequest("User does not exist");
-    res.clearCookie("access").clearCookie("refresh").redirect("/");
+    const access = req.headers.authorization || req.cookies.access;
+    if (!access) throw new BadRequest("Not Logged In");
+    const where = { access };
+    await db.refresh.deleteMany({ where });
+    res.clearCookie("access").status(200).end();
   } catch (error) {
     sendOrLogErrorMessage(res, error);
   }
