@@ -19,6 +19,8 @@ export default {
   destroys,
 };
 
+const orderBy = { create_at: "desc" as const };
+
 // 투두 생성
 async function post(req: Request, res: Response) {
   try {
@@ -63,11 +65,13 @@ async function get(req: Request, res: Response) {
     const todos = await db.todo.findMany({
       where,
       select,
-      orderBy: { id: "asc" },
+      orderBy,
     });
     // 필요한 데이터를 합쳐 객체화
-    const todosByDate = todos
-      .map(({ comment: [comment], ...todo }) => ({ ...todo, comment }));
+    const todosByDate = todos.map(({ comment: [comment], ...todo }) => ({
+      ...todo,
+      comment,
+    }));
     res.status(200).json(todosByDate);
   } catch (error) {
     sendOrLogErrorMessage(res, error);
@@ -97,7 +101,7 @@ async function gets(req: Request, res: Response) {
     const todos = await db.todo.findMany({
       where,
       select,
-      orderBy: { id: "asc" },
+      orderBy,
     });
     // 필요한 데이터를 합쳐 객체화
     const todosByDate = todos
