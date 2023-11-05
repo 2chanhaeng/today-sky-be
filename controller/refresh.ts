@@ -12,8 +12,8 @@ async function post(req: Request, res: Response) {
   try {
     const { refresh } = req.body;
     const { id } = jwt.verify(refresh, config.REFRESH_TOKEN!) as jwt.JwtPayload;
-    const has_refresh = { user_id: id, refresh };
-    const is_exist = await db.refresh.findUnique({ where: has_refresh });
+    const where = { has_refresh: { user_id: id, refresh } };
+    const is_exist = await db.refresh.findUnique({ where });
     if (!is_exist) throw new NotFound({ refresh });
     const access = jwt.sign({ id }, config.ACCESS_TOKEN!, {
       expiresIn: "1h",
