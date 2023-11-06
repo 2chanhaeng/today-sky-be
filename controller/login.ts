@@ -18,11 +18,13 @@ async function post(req: Request, res: Response) {
     // 이미 로그인 상태인 경우 에러 발생
     if (is_logged_in) throw new BadRequest("Already logged in");
     // 입력값 추출
-    const { username, password } = req.body as Prisma.UserCreateInput;
+    const { username, password, keep } = req.body as Prisma.UserCreateInput & {
+      keep: boolean;
+    };
     // 비밀번호 확인
     const id = await verifyUserinfo(username, password);
     // JWT 토큰 생성
-    const { access, refresh } = await createTokens(id);
+    const { access, refresh } = await createTokens(id, keep);
     // 토큰 전송
     res.status(200).json({ access, refresh });
   } catch (error) {

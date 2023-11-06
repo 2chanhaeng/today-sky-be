@@ -50,12 +50,12 @@ export async function verifyUserinfo(username: string, plain: string) {
   return id;
 }
 
-export async function createTokens(id: string) {
+export async function createTokens(id: string, keep: boolean = false) {
   const access = jwt.sign({ id }, config.ACCESS_TOKEN!, {
     expiresIn: "1h",
   });
   const refresh = jwt.sign({ id }, config.REFRESH_TOKEN!, {
-    expiresIn: "30d",
+    expiresIn: keep ? "30d" : "1h",
   });
   // DB에 refresh 토큰 저장
   return await db.refresh.create({ data: { user_id: id, refresh, access } });
