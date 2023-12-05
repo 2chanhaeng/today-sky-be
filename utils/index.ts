@@ -8,3 +8,4 @@ export {
 export { isLogin, createTokens, verifyUserinfo, pbkdf2 } from "./login";
 export { createImageName, getImageNameIfHave } from "./image";
 export { default as sendOrLogErrorMessage } from "./error";
+export { match } from "./match";
