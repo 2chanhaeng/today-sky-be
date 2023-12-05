@@ -5,7 +5,7 @@ import {
   getDateFromUrl,
   today,
 } from "./date";
-import { isLogin, createTokens, verifyUserinfo } from "./login";
+import { isLogin, createTokens, verifyUserinfo, pbkdf2 } from "./login";
 import { createImageName, getImageNameIfHave } from "./image";
 import sendOrLogErrorMessage from "./error";
 
@@ -21,4 +21,5 @@ export {
   sendOrLogErrorMessage,
   createTokens,
   verifyUserinfo,
+  pbkdf2,
 };

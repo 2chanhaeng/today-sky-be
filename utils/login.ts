@@ -28,10 +28,22 @@ export async function isLogin(req: Request, res: Response) {
       return;
     } else {
       // 그외의 경우 모두 로그인 페이지로 리디렉션
-      console.log("Access 토큰 검증 오류", err);
+      console.log("Access 토큰 검증 오류" /*, err*/);
       return;
     }
   }
+}
+
+/**
+ * Encodes plain text with salt using pbkdf2
+ * @param plain {string} original plain text
+ * @param salt {string} salt
+ * @returns {string} encoded text
+ */
+export function pbkdf2(plain: string, salt: string): string {
+  return crypto
+    .pbkdf2Sync(plain, salt, 100000, 64, "sha512")
+    .toString("base64");
 }
 
 export async function verifyUserinfo(username: string, plain: string) {
@@ -41,9 +53,7 @@ export async function verifyUserinfo(username: string, plain: string) {
   const user = await db.user.findUnique({ where, select });
   if (!user) throw new NotFound({ username });
   const { id, salt, password } = user;
-  const encoded = crypto
-    .pbkdf2Sync(plain, salt, 100000, 64, "sha512")
-    .toString("base64");
+  const encoded = pbkdf2(plain, salt);
   // pw가 일치하지 않아도 NotFound 에러 발생
   // pw가 틀렸다고 하면 username의 존재를 알려주기 때문에 DB 간접적으로 노출
   if (password !== encoded) throw new NotFound({ username });

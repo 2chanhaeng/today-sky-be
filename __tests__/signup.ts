@@ -1,8 +1,8 @@
-import crypto from "crypto";
 import request from "supertest";
 import db from "@/db";
 import { signup, genIdPw, genPort, getLoginCookies } from "@/utils/testutil";
 import setPort from "@/testapp";
+import { pbkdf2 } from "@/utils";
 
 const app = setPort(genPort());
 
@@ -11,11 +11,7 @@ test("signup", async () => {
   const res = await signup(username, password, app);
   expect(res.status).toEqual(200);
   const user = await db.user.findUnique({ where: { username } });
-  expect(user?.password).toBe(
-    crypto
-      .pbkdf2Sync(password, user?.salt!, 100000, 64, "sha512")
-      .toString("base64")
-  );
+  expect(user?.password).toBe(pbkdf2(password, user?.salt!));
 });
 
 test("signup with already used username", async () => {
