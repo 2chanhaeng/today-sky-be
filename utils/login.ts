@@ -36,8 +36,8 @@ export async function isLogin(req: Request, res: Response) {
 
 /**
  * Encodes plain text with salt using pbkdf2
- * @param plain {string} original plain text
- * @param salt {string} salt
+ * @param {string} plain original plain text
+ * @param {string} salt salt
  * @returns {string} encoded text
  */
 export function pbkdf2(plain: string, salt: string): string {
