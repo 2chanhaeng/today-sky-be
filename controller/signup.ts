@@ -113,23 +113,26 @@ const sendResponse =
     res.status(status).json(body).end();
 
 // 회원가입 시 username 중복 검사
-async function isDupl(req: Request, res: Response) {
-  try {
-    // username 추출
-    const { username } = req.query;
-    // username이 존재하고 문자열일 경우
-    if (username && typeof username === "string") {
-      // DB에서 username 검색
-      const result = await db.user.findUnique({ where: { username } });
-      // 검색 결과를 json 형태로 응답
-      return res.status(200).json({ isDupl: !!result }).end();
-    }
-  } catch (error) {
-    // 에러 로그 기록
-    console.error("Unknown error in GET /signup/isDupl:", error);
-    // 500 에러 응답
-    res.status(500).json({ message: "Internal Server Error" }).end();
-  }
-  // username이 존재하지 않거나 문자열이 아닌 등 에러 시 400 에러 응답
-  res.status(400).end();
+async function isDupl({ query }: Request, res: Response) {
+  return pipe(
+    query,
+    validDuplInput,
+    mapLeft(handleValidError),
+    fromEither,
+    flatMap(trySearchUsername),
+    makeDuplResponse,
+    Tmap(sendResponse(res))
+  )();
 }
+const searchUsername = async (where: Username) =>
+  !!db.user.findUnique({ where });
+const trySearchUsername = (where: Username) =>
+  tryCatch(
+    async () => searchUsername(where),
+    (error) => () =>
+      new InternalServerError(`Unknown error in GET /signup/dupl: ${error}`)
+  );
+const makeDuplResponse = TEmatch<ErrorIO, ResponseSummary, boolean>(
+  (error: ErrorIO) => error(),
+  (isDupl) => ({ status: 200, isDupl })
+);
