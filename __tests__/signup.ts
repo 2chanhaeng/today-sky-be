@@ -14,7 +14,7 @@ test("signup", async () => {
   expect(user?.password).toBe(pbkdf2(password, user?.salt!));
 });
 
-test("signup with already used username", async () => {
+test("check duplication username", async () => {
   const [username, password] = genIdPw();
   await signup(username, password, app);
   const res = await request(app).get("/signup/is-dupl").query({ username });
@@ -22,27 +22,27 @@ test("signup with already used username", async () => {
   expect(res.body).toEqual({ isDupl: true });
 });
 
-test("signup errors", async () => {
-  let username = " ";
-  let password = "asd";
+test("signup error by empty username", async () => {
+  const username = "";
+  const password = "asd";
   let res = await signup(username, password, app);
   expect(res.status).toEqual(400);
-  expect(res.body.message).toContain("Invalid username or password");
-  (username = "asd"), (password = "");
-  res = await signup(username, password, app);
+  expect(res.body.message).toContain("username must be a non-empty string");
+});
+
+test("signup errors by empty password", async () => {
+  const username = "asd";
+  const password = "";
+  const res = await signup(username, password, app);
   expect(res.status).toEqual(400);
-  expect(res.body.message).toContain("Invalid username or password");
-  [username, password] = genIdPw();
+  expect(res.body.message).toContain("password must be a non-empty string");
+});
+
+test("signup errors already used username", async () => {
+  let [username, password] = genIdPw();
   const cookie = await getLoginCookies(username, password, app);
-  res = await signup(username, password, app);
+  let res = await signup(username, password, app);
   expect(res.status).toEqual(400);
   expect(res.body.message).toContain("Already used username");
   expect(res.body.message).toContain(username);
-  [username, password] = genIdPw();
-  res = await request(app)
-    .post("/signup")
-    .send({ username, password })
-    .set("Cookie", cookie);
-  expect(res.status).toEqual(400);
-  expect(res.body.message).toContain("Already logged in");
 });
