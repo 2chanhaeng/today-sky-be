@@ -1,72 +1,116 @@
 import crypto from "crypto";
 import { Request, Response } from "express";
+import { map, mapLeft } from "fp-ts/Either";
+import {
+  flatMap,
+  tryCatch,
+  fromEither,
+  match as TEmatch,
+} from "fp-ts/TaskEither";
+import { map as Tmap } from "fp-ts/Task";
+import { apply, flow, pipe } from "fp-ts/function";
+import { IO } from "fp-ts/IO";
 import { Prisma } from "@prisma/client";
 import db from "@/db";
-import { isLogin } from "@/utils/login";
 import {
   ConnectionError,
   BadRequest,
   AlreadyUsedUsername,
+  InternalServerError,
 } from "@/types/error";
-
+import {
+  UserCreateInput,
+  Username,
+  validDuplInput,
+  validUserCreateInput,
+} from "@/validates/signup";
+import { match } from "@/utils/match";
+import { pbkdf2 } from "@/utils/login";
 export default {
   post,
   isDupl,
 };
 
-//회원가입 Post
-async function post(req: Request, res: Response) {
-  try {
-    // 회원가입 요청 시 로그인 상태인지 확인
-    const user_id = await isLogin(req, res);
-    // 로그인 상태라면 에러 발생
-    if (user_id) throw new BadRequest("Already logged in");
-    // 회원가입 요청 데이터 추출
-    const { username, password: plain } = req.body as Prisma.UserCreateInput;
-    // 회원가입 요청 데이터 검증
-    // TODO: 데이터 검증 로직 추가
-    if (!username.trim() || !plain.trim())
-      // 검증 오류 시 BadRequest 에러 발생
-      throw new BadRequest("Invalid username or password");
-    const salt = crypto.randomBytes(64).toString("base64");
-    const password = crypto
-      .pbkdf2Sync(plain, salt, 100000, 64, "sha512")
-      .toString("base64");
-    const data = { username, password, salt };
-    try {
-      // DB에 회원가입 요청 데이터 저장
-      const result = await db.user.create({ data });
-      // DB에 저장 실패 시 BadRequest 에러 발생
-      if (!result) throw new BadRequest("Failed to create user");
-      // 회원가입 성공 시 200 응답
-      res.status(200).end();
-    } catch (error) {
-      // DB에 저장 중 발생한 에러 처리
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // P2002: 유일해야하는 필드(username) 중복 에러
-        if (error.code === "P2002")
-          // AlreadyUsedUsername 에러 발생
-          throw new AlreadyUsedUsername(data.username);
-        // 그 외의 에러는 BadRequest 에러 발생
-      } else if (error instanceof Error) throw new BadRequest(error.message);
-      // 이외의 에러는 Unknown 에러 발생
-      throw error;
-    }
-  } catch (error) {
-    // 알려진 에러의 경우
-    if (error instanceof ConnectionError) {
-      // status, message 추출
-      const { status, message } = error;
-      // status, message를 json 형태로 응답
-      return res.status(status).json({ message }).end();
-    }
-    // 이외의 에러일 경우 서버 내부 에러로 간주
-    // 에러 로그 기록
-    console.error("Unknown error in POST /signup:", error);
-    // 500 에러 응답
-    res.status(500).json({ message: "Internal Server Error" }).end();
-  }
+type ErrorIO = IO<ConnectionError>;
+interface ResponseSummary {
+  status: number;
+  message?: string;
+  isDupl?: boolean;
 }
+
+//회원가입 Post
+async function post({ body }: Request, res: Response) {
+  return pipe(
+    body,
+    validUserCreateInput,
+    mapLeft(handleValidError),
+    map(addSaltAndHash),
+    fromEither,
+    flatMap(createUser),
+    makeCreateResponse,
+    Tmap(sendResponse(res))
+  )();
+}
+
+const salt: IO<string> = () => crypto.randomBytes(64).toString("base64");
+const hash = (plain: string, salt: string) => ({
+  salt,
+  password: pbkdf2(plain, salt),
+});
+const addSaltAndHash = ({
+  password,
+  username,
+}: UserCreateInput): Prisma.UserCreateInput => ({
+  username,
+  ...hash(password, salt()),
+});
+
+const matchPrismaError =
+  (username: string) => (error: { code?: string } | any) =>
+    match<unknown, ErrorIO>(
+      [["P2002", () => new AlreadyUsedUsername(username)]],
+      () => new BadRequest("Failed to create user")
+    )(error?.code);
+const unknownErrorFromCreateUser =
+  (error: unknown): ErrorIO =>
+  (): ConnectionError =>
+    new InternalServerError(`Unknown error in POST /signup: ${error}`);
+const errorCaseWhenCreateUser = (username: string) =>
+  [
+    [Prisma.PrismaClientKnownRequestError, matchPrismaError(username)],
+    [Error, (error: unknown) => () => new BadRequest(JSON.stringify(error))],
+  ] as [unknown, (error: unknown) => ErrorIO][];
+
+const matchCreateUserError =
+  ({ username }: UserCreateInput) =>
+  (error: unknown): ErrorIO =>
+    match(errorCaseWhenCreateUser(username), unknownErrorFromCreateUser)(error)(
+      error
+    );
+
+const createUser = (data: Prisma.UserCreateInput) =>
+  tryCatch(
+    async () => !!(await db.user.create({ data })),
+    matchCreateUserError(data)
+  );
+const handleValidError = (errors: string[]) => (): ConnectionError =>
+  new BadRequest(`Failed to create user: ${errors.join(", ")}`);
+
+const getStatusMessage = ({ status, message }: ResponseSummary) => ({
+  status,
+  message,
+});
+const makeCreateResponse = TEmatch<ErrorIO, ResponseSummary, boolean>(
+  flow(apply(null), getStatusMessage),
+  (isSuccess) =>
+    isSuccess
+      ? { status: 200 }
+      : { status: 400, message: "Failed to create user" }
+);
+const sendResponse =
+  (res: Response) =>
+  ({ status, ...body }: ResponseSummary) =>
+    res.status(status).json(body).end();
 
 // 회원가입 시 username 중복 검사
 async function isDupl(req: Request, res: Response) {
