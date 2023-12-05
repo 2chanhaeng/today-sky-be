@@ -16,3 +16,6 @@ export const validate =
       E.fromPredicate(A.isNonEmpty, constVoid),
       E.fold(constant(E.of(v as T)), E.left<string[], T>)
     );
+export const validateString = validate([
+  [S.isString, "username must be a string"],
+]);
