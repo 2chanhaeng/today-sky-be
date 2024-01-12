@@ -19,6 +19,8 @@ model User {
   diary    Diary[]
   todo     Todo[]
   refresh  Refresh[]
+
+  @@unique([username, password], name: "login")
 }
 
 model Refresh {
