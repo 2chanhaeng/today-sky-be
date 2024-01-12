@@ -2,13 +2,15 @@ import {
   Body,
   Controller,
   Post,
+  HttpException,
   ConflictException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { pbkdf2 } from '@/utils/auth';
 import { PrismaService } from '~/prisma/prisma.service';
 import { CreateUserBodyDto } from './dto/createUser.dto';
-import { Prisma } from '@prisma/client';
+import { onNotFoundUser } from './user.errorHandler';
 
 @Controller('user')
 export class UserController {
@@ -28,6 +30,30 @@ export class UserController {
           throw new ConflictException('Username already exists.');
         }
       }
+      console.error(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post('login')
+  async login(@Body() { username, password }: CreateUserBodyDto) {
+    try {
+      const { salt } = await this.prismaService.user
+        .findUniqueOrThrow({
+          where: { username },
+          select: { salt: true },
+        })
+        .catch(onNotFoundUser);
+      const login = { username, password: pbkdf2(password, salt).password };
+      await this.prismaService.user
+        .findUniqueOrThrow({
+          where: { login },
+          select: { id: true },
+        })
+        .catch(onNotFoundUser);
+      return true;
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
       console.error(error);
       throw new InternalServerErrorException();
     }
