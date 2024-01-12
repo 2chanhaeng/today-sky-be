@@ -3,47 +3,46 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "sqlite"
   relationMode = "prisma"
-  url          = env("DATABASE_URL")
+  url          = "file:./dev.db"
 }
 
 model User {
-  id       String  @id @default(uuid())
-  username String  @unique @db.VarChar(255)
-  password String  @db.VarChar(255)
-  // refresh  String? @db.VarChar(255)
-  salt     String  @db.VarChar(255)
+  id       String    @id @default(uuid())
+  username String    @unique // @db.VarChar(255)
+  password String // @db.VarChar(255)
+  // refresh  String? // @db.VarChar(255)
+  salt     String // @db.VarChar(255)
   // TODO:
-  // email    String  @unique @db.VarChar(255)
+  // email    String  @unique // @db.VarChar(255)
   diary    Diary[]
   todo     Todo[]
   refresh  Refresh[]
 }
 
 model Refresh {
-  refresh String @id @db.VarChar(255)
-  access  String @unique @db.VarChar(255)
+  refresh String @id // @db.VarChar(255)
+  access  String @unique // @db.VarChar(255)
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
   // logged_at DateTime @default(now())
-  // logged_device String @db.VarChar(255)
+  // logged_device String // @db.VarChar(255)
   // recent DateTime @default(now()) // Delete after 30 days
 
   @@unique([user_id, refresh], name: "has_refresh")
   @@unique([user_id, access], name: "has_access")
   @@index([user_id])
-
 }
 
 model Emotion {
-  id      String    @id @db.VarChar(15)
+  id      String    @id // @db.VarChar(15)
   comment Comment[]
   diary   Diary[]
 }
 
 model Diary {
-  content    String   @db.Text
+  content    String // @db.Text
   year       Int
   month      Int
   date       Int
@@ -58,16 +57,16 @@ model Diary {
 }
 
 model Todo {
-  id      String    @id @default(uuid())
-  content String    @db.Text
-  year    Int
-  month   Int
-  date    Int
-  user_id String
-  checked Boolean   @default(false)
-  create_at DateTime @default(now())
-  comment Comment[]
-  user    User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id        String    @id @default(uuid())
+  content   String // @db.Text
+  year      Int
+  month     Int
+  date      Int
+  user_id   String
+  checked   Boolean   @default(false)
+  create_at DateTime  @default(now())
+  comment   Comment[]
+  user      User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@unique([id, user_id], name: "hasTodo")
   @@index([year, month, date, user_id], map: "todosOnDate")
@@ -76,7 +75,7 @@ model Todo {
 }
 
 model Comment {
-  content    String   @db.Text
+  content    String // @db.Text
   todo_id    String   @id
   emotion_id String?
   todo       Todo     @relation(fields: [todo_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
