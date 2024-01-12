@@ -1,7 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { pbkdf2 } from '@/utils/auth';
 import { PrismaService } from '~/prisma/prisma.service';
 import { CreateUserBodyDto } from './dto/createUser.dto';
+import { Prisma } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -9,8 +16,20 @@ export class UserController {
 
   @Post('signup')
   async signup(@Body() { username, password }: CreateUserBodyDto) {
-    return this.prismaService.user.create({
-      data: { ...pbkdf2(password), username },
-    });
+    try {
+      const result = await this.prismaService.user.create({
+        data: { ...pbkdf2(password), username },
+        select: { id: true },
+      });
+      return !!result;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Username already exists.');
+        }
+      }
+      console.error(error);
+      throw new InternalServerErrorException();
+    }
   }
 }
