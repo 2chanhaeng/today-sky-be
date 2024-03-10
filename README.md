@@ -100,40 +100,34 @@
 ```mermaid
 erDiagram
   USER {
-    int id
-    string username
-    string password
-    string refresh
+    id uuid
+    username string
+    password string
+    refresh string
+    salt string
   }
   DIARY {
-    int year
-    int month
-    int date
-    int user_id
-    int emotion_id
-    text content
+    year integer
+    month integer
+    date integer
+    user_id uuid
+    content text
+    year_month_date_user_id related
   }
   TODO {
-    int id
-    int year
-    int month
-    int date
-    string content
-    boolean checked
+    id uuid
+    year integer
+    month integer
+    date integer
+    user_id uuid
+    content text
+    checked boolean
   }
   COMMENT {
-    int id
-    int todo_id
-    int emotion_id
-    string content
+    todo_id uuid
+    content text
   }
-  EMOTION {
-    int id
-    string feel
-  }
-  USER ||--o{ DIARY : write
-  USER ||--o{ TODO : doIt
-  EMOTION ||--o{ DIARY : feel
-  EMOTION ||--o{ COMMENT : feel
-  TODO ||--|| COMMENT : howAbout
+  USER ||--o{ DIARY : did
+  USER ||--o{ TODO : will
+  TODO ||--o| COMMENT : feel
 ```
